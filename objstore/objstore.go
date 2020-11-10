@@ -32,7 +32,7 @@ func getlvl(hash1 []byte, hash2 []byte) int {
 
 func hash_update(obn_p *ObjNode, slice []byte, indx byte, obj interface{}, lvl int) {
 	if node_p, ok := obn_p.cmap[indx]; ok {
-		node_p.insert(&slice, obj)
+		node_p.insert(slice, obj)
 	} else {
 		obn_p.cmap[indx] = &ObjNode{
 			slice,
@@ -45,9 +45,9 @@ func hash_update(obn_p *ObjNode, slice []byte, indx byte, obj interface{}, lvl i
 func (obn_p *ObjNode) insert(hash []byte, obj interface{}) {
 	var lvl int = getlvl(obn_p.hash, hash)
 	if lvl >= 0 {
-		var slice1 string = (*hash)[lvl:]
-		var slice2 string = obn_p.hash[lvl:]
-		var indx byte = (*hash)[lvl]
+		var slice1 []byte = hash[lvl:]
+		var slice2 []byte = obn_p.hash[lvl:]
+		var indx byte = hash[lvl]
 		hash_update(obn_p, slice1, indx, obj, lvl)
 		hash_update(obn_p, slice2, indx, obn_p.obj, lvl)
 		obn_p.hash = obn_p.hash[:lvl]
@@ -60,11 +60,8 @@ func (obn_p *ObjNode) find(hash []byte) bool {
 	if lvl == utils.KVAL-1 {
 		return true
 	} else if lvl >= 0 {
-		var indx byte = (*hash)[lvl]
 		var indx byte = hash[lvl]
 		if node_p, ok := obn_p.cmap[indx]; ok {
-			var slice string = (*hash)[lvl:]
-			return node_p.find(&slice)
 			var slice []byte = hash[lvl:]
 			return node_p.find(slice)
 		}
