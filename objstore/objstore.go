@@ -3,7 +3,7 @@ package objstore
 import utils "github.com/r0ck3r008/kademgo/utils"
 
 type ObjNode struct {
-	hash string
+	hash []byte
 	cmap map[byte]*ObjNode
 	obj  interface{}
 }
@@ -12,7 +12,7 @@ type ObjStore struct {
 	root *ObjNode
 }
 
-func getlvl(hash1 *string, hash2 *string) int {
+func getlvl(hash1 []byte, hash2 []byte) int {
 	var lvl int = -1
 	for lvl < utils.KVAL {
 		lvl++
@@ -24,7 +24,7 @@ func getlvl(hash1 *string, hash2 *string) int {
 	return lvl
 }
 
-func hash_update(obn_p *ObjNode, slice string, indx byte, obj interface{}, lvl int) {
+func hash_update(obn_p *ObjNode, slice []byte, indx byte, obj interface{}, lvl int) {
 	if node_p, ok := obn_p.cmap[indx]; ok {
 		node_p.insert(&slice, obj)
 	} else {
@@ -36,8 +36,8 @@ func hash_update(obn_p *ObjNode, slice string, indx byte, obj interface{}, lvl i
 	}
 }
 
-func (obn_p *ObjNode) insert(hash *string, obj interface{}) {
-	var lvl int = getlvl(&obn_p.hash, hash)
+func (obn_p *ObjNode) insert(hash []byte, obj interface{}) {
+	var lvl int = getlvl(obn_p.hash, hash)
 	if lvl >= 0 {
 		var slice1 string = (*hash)[lvl:]
 		var slice2 string = obn_p.hash[lvl:]
@@ -49,15 +49,18 @@ func (obn_p *ObjNode) insert(hash *string, obj interface{}) {
 	}
 }
 
-func (obn_p *ObjNode) find(hash *string) bool {
-	var lvl int = getlvl(&obn_p.hash, hash)
+func (obn_p *ObjNode) find(hash []byte) bool {
+	var lvl int = getlvl(obn_p.hash, hash)
 	if lvl == utils.KVAL-1 {
 		return true
 	} else if lvl >= 0 {
 		var indx byte = (*hash)[lvl]
+		var indx byte = hash[lvl]
 		if node_p, ok := obn_p.cmap[indx]; ok {
 			var slice string = (*hash)[lvl:]
 			return node_p.find(&slice)
+			var slice []byte = hash[lvl:]
+			return node_p.find(slice)
 		}
 	}
 
@@ -66,16 +69,16 @@ func (obn_p *ObjNode) find(hash *string) bool {
 
 func (ost_p *ObjStore) Init() {
 	ost_p.root = &ObjNode{
-		"",
+		[]byte{0},
 		make(map[byte]*ObjNode),
 		nil,
 	}
 }
 
-func (ost_p *ObjStore) Insert(hash *string, obj interface{}) {
+func (ost_p *ObjStore) Insert(hash []byte, obj interface{}) {
 	ost_p.root.insert(hash, obj)
 }
 
-func (ost_p *ObjStore) Find(hash *string) bool {
+func (ost_p *ObjStore) Find(hash []byte) bool {
 	return ost_p.root.find(hash)
 }
