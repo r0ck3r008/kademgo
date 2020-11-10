@@ -14,9 +14,15 @@ type ObjStore struct {
 
 func getlvl(hash1 []byte, hash2 []byte) int {
 	var lvl int = -1
-	for lvl < utils.KVAL {
+	var mlen int
+	if len(hash1) < len(hash2) {
+		mlen = len(hash1)
+	} else {
+		mlen = len(hash2)
+	}
+	for lvl < mlen {
 		lvl++
-		if (*hash1)[lvl] != (*hash2)[lvl] {
+		if hash1[lvl] != hash2[lvl] {
 			break
 		}
 	}
