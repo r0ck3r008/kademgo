@@ -40,10 +40,8 @@ func (nmap_p *NbrMap) Insert(hash *[utils.HASHSZ]byte, obj interface{}) {
 	var indx int = getindx(&nmap_p.hash, hash)
 	nnode_p, ok := nmap_p.bkt[indx]
 	if !ok {
-		var nnode_tmp *NbrNode = &NbrNode{}
-		nnode_tmp.init()
-		nmap_p.bkt[indx] = nnode_tmp
-		nnode_p = nnode_tmp
+		nmap_p.bkt[indx] = nbrnodeinit()
+		nnode_p = nmap_p.bkt[indx]
 	}
 
 	nnode_p.put(hash, obj)
