@@ -73,12 +73,15 @@ func (obn_p *ObjNode) find(hash []byte) bool {
 	return false
 }
 
-func (ost_p *ObjStore) Init() {
+func ObjStoreInit() (ost_p *ObjStore) {
+	ost_p = &ObjStore{}
 	ost_p.root = &ObjNode{
 		[]byte{0},
 		make(map[byte]*ObjNode),
 		nil,
 	}
+
+	return ost_p
 }
 
 func (ost_p *ObjStore) Insert(hash []byte, obj interface{}) {

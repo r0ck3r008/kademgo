@@ -28,9 +28,12 @@ func getindx(hash1 *[utils.HASHSZ]byte, hash2 *[utils.HASHSZ]byte) int {
 	return indx
 }
 
-func (nmap_p *NbrMap) Init() {
+func NbrMapInit() (nmap_p *NbrMap) {
+	nmap_p = &NbrMap{}
 	nmap_p.bkt = make(map[int]*NbrNode)
 	nmap_p.sz = 0
+
+	return nmap_p
 }
 
 func (nmap_p *NbrMap) Insert(hash *[utils.HASHSZ]byte, obj interface{}) {

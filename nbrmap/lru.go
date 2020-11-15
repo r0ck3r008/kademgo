@@ -19,10 +19,13 @@ type NbrNode struct {
 	sz   int
 }
 
-func (cache_p *NbrNode) init() {
+func nbrnodeinit() (cache_p *NbrNode) {
+	cache_p = &NbrNode{}
 	cache_p.cmap = make(map[[utils.HASHSZ]byte]int)
 	cache_p.cvec = make([]*access, utils.KVAL)
 	cache_p.sz = 0
+
+	return cache_p
 }
 
 func (cache_p *NbrNode) put(hash *[utils.HASHSZ]byte, obj interface{}) {
