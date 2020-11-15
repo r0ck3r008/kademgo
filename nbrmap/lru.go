@@ -1,3 +1,6 @@
+// This is a part of nbrmap package and it is responsible
+// for maintaining the LRU evicting policy
+
 package nbrmap
 
 import (

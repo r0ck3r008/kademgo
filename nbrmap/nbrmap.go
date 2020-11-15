@@ -1,3 +1,7 @@
+// This package is responsible for,
+// 1. Inserting to and deleting from neighbour entries from k-buckets
+// 2. Calculating distances between itself and the provided neighbours
+
 package nbrmap
 
 import (

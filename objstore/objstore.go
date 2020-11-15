@@ -1,3 +1,6 @@
+// This package is responsible for maintaing a prefix tree for the objects
+// that the current node possesses. Its provides insertion and checking for existence
+
 package objstore
 
 import utils "github.com/r0ck3r008/kademgo/utils"

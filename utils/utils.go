@@ -1,3 +1,6 @@
+// This package is responsible for providing general utilities that might be used by
+// any of the other packages
+
 package utils
 
 import (
