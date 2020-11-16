@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package node;
+
+message Pkt {
+        enum PktType {
+                Dummy = 0;
+                PingReq = 1;
+                PingRep = 2;
+        }
+
+        PktType Type = 1;
+        string Hash = 2;
+}
