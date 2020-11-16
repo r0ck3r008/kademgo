@@ -1,20 +1,22 @@
-// This package is responsible for maintaing a prefix tree for the objects
+// Objstore package is responsible for maintaing a prefix tree for the objects
 // that the current node possesses. Its provides insertion and checking for existence
-
 package objstore
 
 import utils "github.com/r0ck3r008/kademgo/utils"
 
+// ObjNode embodies each node in the prefix tree for the ObjStore.
 type ObjNode struct {
 	hash []byte
 	cmap map[byte]*ObjNode
 	obj  interface{}
 }
 
+// ObjStore is the encapsulation over the root node of the prefix tree.
 type ObjStore struct {
 	root *ObjNode
 }
 
+// getlvl finds the max character length upto where two hashes are the same.
 func getlvl(hash1 []byte, hash2 []byte) int {
 	var lvl int = -1
 	var mlen int
@@ -33,6 +35,7 @@ func getlvl(hash1 []byte, hash2 []byte) int {
 	return lvl
 }
 
+// hash_update function updates the hash map of a particular ObjNode.
 func hash_update(obn_p *ObjNode, slice []byte, indx byte, obj interface{}, lvl int) {
 	if node_p, ok := obn_p.cmap[indx]; ok {
 		node_p.insert(slice, obj)
@@ -45,6 +48,7 @@ func hash_update(obn_p *ObjNode, slice []byte, indx byte, obj interface{}, lvl i
 	}
 }
 
+// insert recursively inserts an object according to its hash into the prefix tree.
 func (obn_p *ObjNode) insert(hash []byte, obj interface{}) {
 	var lvl int = getlvl(obn_p.hash, hash)
 	if lvl >= 0 {
@@ -58,6 +62,7 @@ func (obn_p *ObjNode) insert(hash []byte, obj interface{}) {
 	}
 }
 
+// find recursively checks if the given hash is present in the prefix tree.
 func (obn_p *ObjNode) find(hash []byte) bool {
 	var lvl int = getlvl(obn_p.hash, hash)
 	if lvl == utils.KVAL-1 {
@@ -73,6 +78,7 @@ func (obn_p *ObjNode) find(hash []byte) bool {
 	return false
 }
 
+// ObjStoreInit initiates the root in ObjStore.
 func ObjStoreInit() (ost_p *ObjStore) {
 	ost_p = &ObjStore{}
 	ost_p.root = &ObjNode{
@@ -84,10 +90,12 @@ func ObjStoreInit() (ost_p *ObjStore) {
 	return ost_p
 }
 
+// Insert is an encapsulation over ObjNode.insert.
 func (ost_p *ObjStore) Insert(hash []byte, obj interface{}) {
 	ost_p.root.insert(hash, obj)
 }
 
+// Find is an encapsulation over ObjNode.find.
 func (ost_p *ObjStore) Find(hash []byte) bool {
 	return ost_p.root.find(hash)
 }
