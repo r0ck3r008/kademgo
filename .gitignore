@@ -4,3 +4,4 @@ bin/*
 !doc/kpos.pdf
 tmp/*
 !tmp/.gitkeep
+go.sum
