@@ -17,6 +17,7 @@ import (
 	"github.com/r0ck3r008/kademgo/nbrmap"
 	"github.com/r0ck3r008/kademgo/objstore"
 	"github.com/r0ck3r008/kademgo/utils"
+	"google.golang.org/protobuf/proto"
 )
 
 // Node structure encapsulates the UDP listening port, objstore object,
@@ -53,10 +54,25 @@ func NodeInit(addr *string, port int) (*Node, error) {
 // based on the type of the message received.
 func (node_p *Node) SrvLoop() {
 	for {
-		var cmdr [512]byte
-		_, _, err := node_p.conn.ReadFromUDP(cmdr[:])
+		var cmdr []byte = make([]byte, 512)
+		_, addr_p, err := node_p.conn.ReadFromUDP(cmdr)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error in reading: %s\n", err)
+			os.Exit(1)
+		}
+
+		var pkt_p *Pkt = &Pkt{}
+		if err := proto.Unmarshal(cmdr, pkt_p); err != nil {
+			fmt.Fprintf(os.Stderr, "Error in unmarshalling: %s\n", err)
+			os.Exit(1)
+		}
+
+		switch pkt_p.GetType() {
+		case Pkt_PingReq:
+			go node_p.PingRep(addr_p)
+		case Pkt_PingRep:
+		default:
+			fmt.Fprintf(os.Stderr, "Unknown type received!\n")
 			os.Exit(1)
 		}
 	}
