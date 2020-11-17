@@ -9,11 +9,11 @@ package node
 import (
 	"fmt"
 	"math/rand"
-	"net"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/r0ck3r008/kademgo/connector"
 	"github.com/r0ck3r008/kademgo/nbrmap"
 	"github.com/r0ck3r008/kademgo/objstore"
 	"github.com/r0ck3r008/kademgo/utils"
@@ -40,12 +40,11 @@ func NodeInit(addr *string, port int) (*Node, error) {
 	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
 	node_p.hash = utils.HashStr([]byte(rnum_str))
 
-	conn_p, err := net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: port, Zone: ""})
+	conn, err := connector.ConnectorInit(addr)
 	if err != nil {
-		return nil, fmt.Errorf("UDP Create: %s", err)
+		return nil, fmt.Errorf("Error in starting listener: %s\n", err)
 	}
-
-	node_p.conn = conn_p
+	node_p.conn = conn
 
 	return node_p, nil
 }
