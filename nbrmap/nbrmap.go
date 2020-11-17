@@ -8,7 +8,8 @@ import (
 	"fmt"
 	"net"
 
-	utils "github.com/r0ck3r008/kademgo/utils"
+	"github.com/r0ck3r008/kademgo/connector"
+	"github.com/r0ck3r008/kademgo/utils"
 )
 
 type NbrAddr struct {
