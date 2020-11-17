@@ -51,6 +51,12 @@ func (cache_p *NbrNode) put(hash *[utils.HASHSZ]byte, obj *NbrAddr, replace bool
 	}
 	// Append to the end now
 	cache_p.cvec = append(cache_p.cvec, &access{obj, *hash})
+func (cache_p *NbrNode) gethead() (*NbrAddr, bool) {
+	if len(cache_p.cvec) == utils.KVAL {
+		return cache_p.cvec[0].obj, true
+	}
+
+	return nil, false
 }
 
 // get fetches the neighbour if it exists in the cache, returns error on faliure.
