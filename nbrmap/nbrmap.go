@@ -6,9 +6,15 @@ package nbrmap
 
 import (
 	"fmt"
+	"net"
 
 	utils "github.com/r0ck3r008/kademgo/utils"
 )
+
+type NbrAddr struct {
+	Addr net.UDPAddr
+	Hash [utils.HASHSZ]byte
+}
 
 // NbrMap is a structure that serves as the encapsulation over all the K-Buckets
 // and provides the functionality to look up or insert a new neighbour.
@@ -42,8 +48,8 @@ func NbrMapInit() (nmap_p *NbrMap) {
 }
 
 // Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap
-func (nmap_p *NbrMap) Insert(hash *[utils.HASHSZ]byte, obj interface{}) {
 	var indx int = getindx(&nmap_p.hash, hash)
+func (nmap_p *NbrMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *NbrAddr, conn_p *connector.Connector) {
 	nnode_p, ok := nmap_p.bkt[indx]
 	if !ok {
 		nmap_p.bkt[indx] = nbrnodeinit()
@@ -54,8 +60,7 @@ func (nmap_p *NbrMap) Insert(hash *[utils.HASHSZ]byte, obj interface{}) {
 }
 
 // Get is used to see if a neighbour exists in the NeighbourMap, returns error on failure.
-func (nmap_p *NbrMap) Get(hash *[utils.HASHSZ]byte) (*interface{}, error) {
-	var indx int = getindx(&nmap_p.hash, hash)
+func (nmap_p *NbrMap) Get(hash *[utils.HASHSZ]byte, indx int) (*NbrAddr, error) {
 	if node_p, ok := nmap_p.bkt[indx]; ok {
 		return node_p.get(hash)
 	}
