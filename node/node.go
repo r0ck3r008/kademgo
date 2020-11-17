@@ -31,7 +31,7 @@ type Node struct {
 
 // NodeInit is the function that initiates the ObjStore, NbrMap, UDP listener
 // and as well as forms the random hash for the node.
-func NodeInit(addr *string, port int) (*Node, error) {
+func NodeInit(addr *string) (*Node, error) {
 	node_p := &Node{}
 	node_p.nmap = nbrmap.NbrMapInit()
 	node_p.ost = objstore.ObjStoreInit()
