@@ -47,10 +47,19 @@ func (cache_p *NbrNode) put(hash *[utils.HASHSZ]byte, obj *NbrAddr, replace bool
 			old_p, cache_p.cvec = cache_p.cvec[1], cache_p.cvec[1:]
 			delete(cache_p.cmap, old_p.hash)
 		}
-		cache_p.cmap[*hash] = veclen
 	}
-	// Append to the end now
-	cache_p.cvec = append(cache_p.cvec, &access{obj, *hash})
+	veclen := len(cache_p.cvec)
+	if replace {
+		var old_p *access
+		old_p, cache_p.cvec = cache_p.cvec[1], cache_p.cvec[1:]
+		delete(cache_p.cmap, old_p.hash)
+	}
+	cache_p.cmap[*hash] = veclen
+	// Copy the address
+	var addr NbrAddr = *obj
+	cache_p.cvec = append(cache_p.cvec, &access{&addr, *hash})
+}
+
 func (cache_p *NbrNode) gethead() (*NbrAddr, bool) {
 	if len(cache_p.cvec) == utils.KVAL {
 		return cache_p.cvec[0].obj, true
