@@ -26,7 +26,7 @@ type Node struct {
 	nmap *nbrmap.NbrMap
 	ost  *objstore.ObjStore
 	hash [utils.HASHSZ]byte
-	conn *net.UDPConn
+	conn *connector.Connector
 }
 
 // NodeInit is the function that initiates the ObjStore, NbrMap, UDP listener
