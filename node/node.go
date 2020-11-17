@@ -53,6 +53,7 @@ func NodeInit(addr *string) (*Node, error) {
 // based on the type of the message received.
 func (node_p *Node) SrvLoop() {
 	for {
+		// Read incoming data from socket (Make sure this is the right length)
 		var cmdr []byte = make([]byte, 512)
 		_, addr_p, err := node_p.conn.ReadFromUDP(cmdr)
 		if err != nil {
@@ -60,12 +61,14 @@ func (node_p *Node) SrvLoop() {
 			os.Exit(1)
 		}
 
+		// Unmarshal the data
 		var pkt_p *Pkt = &Pkt{}
 		if err := proto.Unmarshal(cmdr, pkt_p); err != nil {
 			fmt.Fprintf(os.Stderr, "Error in unmarshalling: %s\n", err)
 			os.Exit(1)
 		}
 
+		// Check for possible packet type
 		switch pkt_p.GetType() {
 		case Pkt_PingReq:
 			go node_p.PingRep(addr_p)
