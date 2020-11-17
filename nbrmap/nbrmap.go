@@ -20,9 +20,8 @@ type NbrAddr struct {
 // NbrMap is a structure that serves as the encapsulation over all the K-Buckets
 // and provides the functionality to look up or insert a new neighbour.
 type NbrMap struct {
-	sz   int
-	hash [utils.HASHSZ]byte
-	bkt  map[int]*NbrNode
+	sz  int
+	bkt map[int]*NbrNode
 }
 
 // getindex is the function that calculates the `distance' of the given node's
