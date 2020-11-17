@@ -71,7 +71,7 @@ func (cache_p *NbrNode) gethead() (*NbrAddr, bool) {
 // get fetches the neighbour if it exists in the cache, returns error on faliure.
 func (cache_p *NbrNode) get(hash *[utils.HASHSZ]byte) (*NbrAddr, error) {
 	if indx, ok := cache_p.cmap[*hash]; ok {
-		return &cache_p.cvec[indx].obj, nil
+		return cache_p.cvec[indx].obj, nil
 	}
 
 	return nil, fmt.Errorf("Not Found!")
