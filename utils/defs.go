@@ -17,6 +17,9 @@ const (
 	// will be dropped by the node that happens to receive that.
 	MAXHOPS = 20
 
+	// PORTNUM defines the standard port that would be used for this application.
+	PORTNUM = 12345
+
 	// PINGWAIT is the amounf of time the Ping call would wait before it fails and decides
 	// to evict the neighbour in question.
 	PINGWAIT = 500 * time.Millisecond

@@ -33,7 +33,7 @@ type Connector struct {
 
 // ConnectorInit sets up the UDP listening socket, send and recv channels, mutex and the packet cache map.
 func ConnectorInit(addr *string) (*Connector, error) {
-	conn_p, err := net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: utils.GENPORT, Zone: ""})
+	conn_p, err := net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: utils.PORTNUM, Zone: ""})
 	if err != nil {
 		return nil, fmt.Errorf("UDP Create: %s", err)
 	}
