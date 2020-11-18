@@ -3,6 +3,7 @@ package nbrmap
 import (
 	"fmt"
 
+	"github.com/r0ck3r008/kademgo/connector"
 	"github.com/r0ck3r008/kademgo/utils"
 )
 
@@ -43,21 +44,16 @@ func (cache_p *NbrNode) put(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]
 		// of cvec and cmap
 		veclen := len(cache_p.cvec)
 		if veclen == utils.KVAL {
-			var old_p *access
-			old_p, cache_p.cvec = cache_p.cvec[1], cache_p.cvec[1:]
-			delete(cache_p.cmap, old_p.hash)
+			var old_p *access = cache_p.cvec[0]
+			if !conn_p.Ping(srchash, &old_p.obj.Addr) {
+				delete(cache_p.cmap, old_p.hash)
+				_, cache_p.cvec = cache_p.cvec[0], cache_p.cvec[1:]
+			}
 		}
+		cache_p.cmap[*dsthash] = veclen
 	}
-	veclen := len(cache_p.cvec)
-	if replace {
-		var old_p *access
-		old_p, cache_p.cvec = cache_p.cvec[1], cache_p.cvec[1:]
-		delete(cache_p.cmap, old_p.hash)
-	}
-	cache_p.cmap[*hash] = veclen
-	// Copy the address
 	var addr NbrAddr = *obj
-	cache_p.cvec = append(cache_p.cvec, &access{&addr, *hash})
+	cache_p.cvec = append(cache_p.cvec, &access{&addr, *dsthash})
 }
 
 func (cache_p *NbrNode) gethead() (*NbrAddr, bool) {
