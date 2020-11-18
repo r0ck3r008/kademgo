@@ -35,7 +35,6 @@ func NodeInit(addr *string) (*Node, error) {
 	node_p.nmap = nbrmap.NbrMapInit()
 	node_p.ost = objstore.ObjStoreInit()
 
-	rand.Seed(time.Now().UnixNano())
 	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
 	node_p.hash = utils.HashStr([]byte(rnum_str))
 
