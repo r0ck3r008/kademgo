@@ -33,8 +33,8 @@ func nbrnodeinit() (cache_p *NbrNode) {
 // put is used to insert a new neighbour into the cached list of neighbours.
 // It uses LRU eviction policy based on an irresponsive last contacted neighbour
 // in case of a filled bucket.
-func (cache_p *NbrNode) put(hash *[utils.HASHSZ]byte, obj *NbrAddr, replace bool) {
-	if indx, ok := cache_p.cmap[*hash]; ok && (indx != len(cache_p.cvec)-1) {
+func (cache_p *NbrNode) put(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *NbrAddr, conn_p *connector.Connector) {
+	if indx, ok := cache_p.cmap[*dsthash]; ok && (indx != len(cache_p.cvec)-1) {
 		// Found! Now remove it from where ever it is
 		cache_p.cvec = append(cache_p.cvec[:indx], cache_p.cvec[indx+1:]...)
 	} else {

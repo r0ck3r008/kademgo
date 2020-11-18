@@ -48,15 +48,16 @@ func NbrMapInit() (nmap_p *NbrMap) {
 }
 
 // Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap
-	var indx int = getindx(&nmap_p.hash, hash)
 func (nmap_p *NbrMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *NbrAddr, conn_p *connector.Connector) {
+	var indx int = getindx(srchash, dsthash)
 	nnode_p, ok := nmap_p.bkt[indx]
 	if !ok {
 		nmap_p.bkt[indx] = nbrnodeinit()
 		nnode_p = nmap_p.bkt[indx]
 	}
 
-	nnode_p.put(hash, obj)
+	nnode_p.put(srchash, dsthash, obj, conn_p)
+
 }
 
 // Get is used to see if a neighbour exists in the NeighbourMap, returns error on failure.
