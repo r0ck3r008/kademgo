@@ -62,13 +62,6 @@ func (cache_p *NbrNode) put(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]
 			}
 		}
 	}
-
-func (cache_p *NbrNode) gethead() (*NbrAddr, bool) {
-	if len(cache_p.cvec) == utils.KVAL {
-		return cache_p.cvec[0].obj, true
-	}
-
-	return nil, false
 }
 
 // get fetches the neighbour if it exists in the cache, returns error on faliure.
