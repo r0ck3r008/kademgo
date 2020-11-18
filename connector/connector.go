@@ -1,3 +1,6 @@
+// connector package is supposed to act like a modified socket connection
+// for receiving and sending messages. It can be passed around to functions
+// that need to leverage the API.
 package connector
 
 import (
@@ -10,12 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// Envelope is an encapsulation which would be passed around in go channels.
+// This exists since google's protobuf refuses to be send along in the channels.
 type Envelope struct {
 	id   int64
 	cmds []byte
 	addr net.UDPAddr
 }
 
+// Connector type that stores all the channel, wait mutex and packet cache
+// and is an required element before any function can use the API.
 type Connector struct {
 	conn   *net.UDPConn
 	pcache map[int64]Envelope
@@ -24,6 +31,7 @@ type Connector struct {
 	rch    chan Envelope
 }
 
+// ConnectorInit sets up the UDP listening socket, send and recv channels, mutex and the packet cache map.
 func ConnectorInit(addr *string) (*Connector, error) {
 	conn_p, err := net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: utils.GENPORT, Zone: ""})
 	if err != nil {
@@ -37,6 +45,8 @@ func ConnectorInit(addr *string) (*Connector, error) {
 	return conn, nil
 }
 
+// Collector is intended to be a goroutine that process the received packets in form of Envelope
+// struct and caches it in the connector cache based on the identifier.
 func (conn_p *Connector) Collector() {
 	for env := range conn_p.sch {
 		// Acquire write lock and write to cache
@@ -45,6 +55,9 @@ func (conn_p *Connector) Collector() {
 		conn_p.mut.Unlock()
 	}
 }
+
+// ReadLoop is supposed to be run as a go routine which can read all the messages comming in
+// to the node and send those along, if the TTL has not expired, to the Collector.
 func (conn_p *Connector) ReadLoop() {
 	for {
 		var cmdr []byte
@@ -76,6 +89,8 @@ func (conn_p *Connector) ReadLoop() {
 	}
 }
 
+// WriteLoop is supposed to be run as a goroutine which takes all the packets that need to be sent
+// from the node and send them asynchronously to the desired destinations.
 func (conn_p *Connector) WriteLoop() {
 	for env := range conn_p.sch {
 		if _, err := conn_p.conn.WriteToUDP(env.cmds, &env.addr); err != nil {

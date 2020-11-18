@@ -12,7 +12,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// PingReq requests for a ping reply from the passed in UDP address.
+// Ping requests for a ping reply from the passed in UDP address and returns a bool return value if
+// a reply shows up. It waits for utils.PINGWAIT amount of time before it fails.
 func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) bool {
 	var rand_num int64 = int64(rand.Int())
 	addr := *addr_p
