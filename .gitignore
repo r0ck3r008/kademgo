@@ -5,4 +5,4 @@ bin/*
 tmp/*
 !tmp/.gitkeep
 go.sum
-node/packets.pb.go
+connector/packets.pb.go
