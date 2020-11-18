@@ -47,7 +47,8 @@ func NbrMapInit() (nmap_p *NbrMap) {
 	return nmap_p
 }
 
-// Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap
+// Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap.
+// This should be invoked as a go routine.
 func (nmap_p *NbrMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *NbrAddr, conn_p *connector.Connector) {
 	var indx int = getindx(srchash, dsthash)
 	nnode_p, ok := nmap_p.bkt[indx]
