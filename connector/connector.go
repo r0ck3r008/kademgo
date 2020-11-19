@@ -41,4 +41,9 @@ func (conn_p *Connector) Init(addr *string) error {
 	return nil
 }
 
+// DeInit close the UDP bound socket as well as both the send and recv channels.
+func (conn_p *Connector) DeInit() {
+	close(conn_p.sch)
+	close(conn_p.rch)
+	conn_p.conn.Close()
 }
