@@ -30,32 +30,34 @@ type KademGo struct {
 // Init is the function that initiates the ObjStore, NbrMap, UDP listener
 // and as well as forms the random hash for the node.
 func (kdm_p *KademGo) Init(addr *string) error {
-	kdm_p.nmap = nbrmap.NbrMapInit()
-	kdm_p.ost = objstore.ObjStoreInit()
+	kdm_p.nmap = &nbrmap.NbrMap{}
+	kdm_p.ost = &objstore.ObjStore{}
+	kdm_p.conn = &connector.Connector{}
+
+	kdm_p.nmap.Init()
+	kdm_p.ost.Init()
+	err := kdm_p.conn.Init(addr)
+	if err != nil {
+		return fmt.Errorf("Error in starting listener: %s\n", err)
+	}
 
 	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
 	kdm_p.hash = utils.HashStr([]byte(rnum_str))
 
-	conn, err := connector.ConnectorInit(addr)
-	if err != nil {
-		return fmt.Errorf("Error in starting listener: %s\n", err)
-	}
-	kdm_p.conn = conn
-	var wg = &sync.WaitGroup{}
-	wg.Add(3)
+	kdm_p.wg = &sync.WaitGroup{}
+	kdm_p.wg.Add(3)
 	go func() {
-		conn.ReadLoop()
-		wg.Done()
+		kdm_p.conn.ReadLoop()
+		kdm_p.wg.Done()
 	}()
 	go func() {
-		conn.WriteLoop()
-		wg.Done()
+		kdm_p.conn.WriteLoop()
+		kdm_p.wg.Done()
 	}()
 	go func() {
-		conn.Collector()
-		wg.Done()
+		kdm_p.conn.Collector()
+		kdm_p.wg.Done()
 	}()
-	kdm_p.wg = wg
 
 	return nil
 }
