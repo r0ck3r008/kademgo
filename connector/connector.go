@@ -14,7 +14,6 @@ import (
 )
 
 // Envelope is an encapsulation which would be passed around in go channels.
-// This exists since google's protobuf refuses to be send along in the channels.
 type Envelope struct {
 	pkt  Pkt
 	addr net.UDPAddr
@@ -66,7 +65,6 @@ func (conn_p *Connector) ReadLoop() {
 			close(conn_p.rch)
 			break
 		}
-		// Extra UnMarshal due to pesky Mutex in Google Protobuf which stops from being sent on a channel
 		var pkt Pkt = Pkt{}
 		err = json.Unmarshal(cmdr, &pkt)
 		if err != nil {
