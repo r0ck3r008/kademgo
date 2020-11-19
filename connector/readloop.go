@@ -4,17 +4,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	sync "sync"
 )
 
 // Collector is intended to be a goroutine that process the received packets in form of Envelope
 // struct and caches it in the connector cache based on the identifier.
 func (conn_p *Connector) Collector() {
-	for env := range conn_p.sch {
-		// Acquire write lock and write to cache
-		conn_p.mut.Lock()
-		conn_p.pcache[env.pkt.RandNum] = env
-		conn_p.mut.Unlock()
+	wg := sync.WaitGroup{}
+	for env := range conn_p.rch {
+		switch env.pkt.Type {
+		case PingReq:
+			wg.Add(1)
+			go func() { conn_p.PingRes(env); wg.Done() }()
+		default:
+			// Acquire write lock and write to cache
+			conn_p.mut.Lock()
+			conn_p.pcache[env.pkt.RandNum] = env
+			conn_p.mut.Unlock()
+		}
 	}
+	wg.Wait()
 }
 
 // ReadLoop is supposed to be run as a go routine which can read all the messages comming in
