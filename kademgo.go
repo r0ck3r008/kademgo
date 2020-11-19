@@ -1,9 +1,8 @@
-// Node package is responsible for:
+// kademgo package is responsible for:
 // 1. Creating a hash for itself
 // 2. Instantiating a nbrmap object
 // 3. Instantiating an objstore object
 // 4. Providing the API for Kademlia RPCs
-// Kademlia API for RPCs is implemented in api.go
 package kademgo
 
 import (
@@ -18,7 +17,7 @@ import (
 	"github.com/r0ck3r008/kademgo/utils"
 )
 
-// Node structure encapsulates the UDP listening port, objstore object,
+// KademGo structure encapsulates the UDP listening port, objstore object,
 // NbrMap object as well as the hash of the node in question.
 type KademGo struct {
 	nmap *nbrmap.NbrMap
@@ -28,7 +27,7 @@ type KademGo struct {
 	wg   *sync.WaitGroup
 }
 
-// NodeInit is the function that initiates the ObjStore, NbrMap, UDP listener
+// Init is the function that initiates the ObjStore, NbrMap, UDP listener
 // and as well as forms the random hash for the node.
 func (kdm_p *KademGo) Init(addr *string) error {
 	kdm_p.nmap = nbrmap.NbrMapInit()
@@ -61,6 +60,7 @@ func (kdm_p *KademGo) Init(addr *string) error {
 	return nil
 }
 
+// DeInit function waits for all the go routines registered to exit.
 func (kdm_p *KademGo) DeInit() {
 	kdm_p.wg.Wait()
 }
