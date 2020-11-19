@@ -2,14 +2,15 @@
 // that the current node possesses. Its provides insertion and checking for existence
 package objstore
 
-// ObjNode embodies each node in the prefix tree for the ObjStore.
+// ObjNode is the node that represents the Key, Value pair.
+// If object is empty slice, it means that it is not a leaf node.
 type ObjNode struct {
 	hash []byte
 	cmap map[byte]*ObjNode
-	obj  interface{}
+	obj  []byte
 }
 
-// ObjStore is the encapsulation over the root node of the prefix tree.
+// ObjStore is an abstraction of the root node of the prefix tree.
 type ObjStore struct {
 	root *ObjNode
 }
