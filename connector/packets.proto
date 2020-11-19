@@ -5,8 +5,9 @@ package connector;
 message Pkt {
         enum PktType {
                 Dummy = 0;
-                PingReq = 1;
-                PingRep = 2;
+                BeginReq = 1;
+                PingReq = 2;
+                PingRes = 3;
         }
 
         PktType Type = 1;
