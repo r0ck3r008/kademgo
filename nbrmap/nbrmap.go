@@ -24,20 +24,6 @@ type NbrMap struct {
 	bkt map[int]*NbrNode
 }
 
-// getindex is the function that calculates the `distance' of the given node's
-// hash from the node which is caling it.
-func getindx(hash1 *[utils.HASHSZ]byte, hash2 *[utils.HASHSZ]byte) int {
-	var indx int = 0
-	// The indx is basically the log of 2^{i} as mentioned in the algorithm
-	// The algorithm states that each kbucket stores addresses with distance
-	// of 2_{i} < d < 2_{i+1} where 0 <= i < 160. This indx is that `i'
-	for i := utils.HASHSZ - 1; i > 0; i++ {
-		indx += int((*hash1)[i] ^ (*hash2)[i])
-	}
-
-	return indx
-}
-
 // Init is the initiator for the NbrMap and initiates the map of k-buckets.
 func (nmap_p *NbrMap) Init() {
 	nmap_p = &NbrMap{}
@@ -48,7 +34,7 @@ func (nmap_p *NbrMap) Init() {
 // Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap.
 // This should be invoked as a go routine.
 func (nmap_p *NbrMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *NbrAddr, conn_p *connector.Connector) {
-	var indx int = getindx(srchash, dsthash)
+	var indx int = utils.GetDist(srchash, dsthash)
 	nnode_p, ok := nmap_p.bkt[indx]
 	if !ok {
 		nmap_p.bkt[indx] = nbrnodeinit()
