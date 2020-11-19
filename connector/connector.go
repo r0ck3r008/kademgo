@@ -4,10 +4,8 @@
 package connector
 
 import (
-	"encoding/json"
 	"fmt"
 	"net"
-	"os"
 	sync "sync"
 
 	"github.com/r0ck3r008/kademgo/utils"
@@ -43,54 +41,4 @@ func (conn_p *Connector) Init(addr *string) error {
 	return nil
 }
 
-// Collector is intended to be a goroutine that process the received packets in form of Envelope
-// struct and caches it in the connector cache based on the identifier.
-func (conn_p *Connector) Collector() {
-	for env := range conn_p.sch {
-		// Acquire write lock and write to cache
-		conn_p.mut.Lock()
-		conn_p.pcache[env.pkt.RandNum] = env
-		conn_p.mut.Unlock()
-	}
-}
-
-// ReadLoop is supposed to be run as a go routine which can read all the messages comming in
-// to the node and send those along, if the TTL has not expired, to the Collector.
-func (conn_p *Connector) ReadLoop() {
-	for {
-		var cmdr []byte
-		_, addr_p, err := conn_p.conn.ReadFromUDP(cmdr)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error in reading: %s\n", err)
-			close(conn_p.rch)
-			break
-		}
-		var pkt Pkt = Pkt{}
-		err = json.Unmarshal(cmdr, &pkt)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error in unmarshalling: %s\n", err)
-			os.Exit(1)
-		}
-		if pkt.Ttl != 0 {
-			pkt.Ttl--
-			var env Envelope = Envelope{pkt, *addr_p}
-			conn_p.sch <- env
-		}
-	}
-}
-
-// WriteLoop is supposed to be run as a goroutine which takes all the packets that need to be sent
-// from the node and send them asynchronously to the desired destinations.
-func (conn_p *Connector) WriteLoop() {
-	for env := range conn_p.sch {
-		cmds, err := json.Marshal(env.pkt)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error in Marshalling: %s\n", err)
-			break
-		}
-		if _, err := conn_p.conn.WriteToUDP(cmds, &env.addr); err != nil {
-			fmt.Fprintf(os.Stderr, "Error in writing: %s\n", err)
-			break
-		}
-	}
 }
