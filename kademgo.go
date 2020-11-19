@@ -46,18 +46,9 @@ func (kdm_p *KademGo) Init(addr *string, gway_addr *string) error {
 
 	kdm_p.wg = &sync.WaitGroup{}
 	kdm_p.wg.Add(3)
-	go func() {
-		kdm_p.conn.ReadLoop()
-		kdm_p.wg.Done()
-	}()
-	go func() {
-		kdm_p.conn.WriteLoop()
-		kdm_p.wg.Done()
-	}()
-	go func() {
-		kdm_p.conn.Collector()
-		kdm_p.wg.Done()
-	}()
+	go func() { kdm_p.conn.ReadLoop(); kdm_p.wg.Done() }()
+	go func() { kdm_p.conn.WriteLoop(); kdm_p.wg.Done() }()
+	go func() { kdm_p.conn.Collector(); kdm_p.wg.Done() }()
 
 	kdm_p.conn.FindPeers(&kdm_p.hash, gway_addr)
 
@@ -66,5 +57,6 @@ func (kdm_p *KademGo) Init(addr *string, gway_addr *string) error {
 
 // DeInit function waits for all the go routines registered to exit.
 func (kdm_p *KademGo) DeInit() {
+	kdm_p.conn.DeInit()
 	kdm_p.wg.Wait()
 }

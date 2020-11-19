@@ -25,7 +25,6 @@ func (conn_p *Connector) ReadLoop() {
 		_, addr_p, err := conn_p.conn.ReadFromUDP(cmdr)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error in reading: %s\n", err)
-			close(conn_p.rch)
 			break
 		}
 		var pkt Pkt = Pkt{}

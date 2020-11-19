@@ -43,6 +43,7 @@ func (conn_p *Connector) Init(addr *string) error {
 
 // DeInit close the UDP bound socket as well as both the send and recv channels.
 func (conn_p *Connector) DeInit() {
+	// Closing rch and sch would inevitably make ReadLoop/WriteLoop and Collector exit.
 	close(conn_p.sch)
 	close(conn_p.rch)
 	conn_p.conn.Close()
