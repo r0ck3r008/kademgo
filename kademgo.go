@@ -13,7 +13,7 @@ import (
 
 	"github.com/r0ck3r008/kademgo/connector"
 	"github.com/r0ck3r008/kademgo/nbrmap"
-	"github.com/r0ck3r008/kademgo/objstore"
+	"github.com/r0ck3r008/kademgo/objmap"
 	"github.com/r0ck3r008/kademgo/utils"
 )
 
@@ -21,7 +21,7 @@ import (
 // NbrMap object as well as the hash of the node in question.
 type KademGo struct {
 	nmap *nbrmap.NbrMap
-	ost  *objstore.ObjStore
+	ost  *objmap.ObjMap
 	hash [utils.HASHSZ]byte
 	conn *connector.Connector
 	wg   *sync.WaitGroup
@@ -31,7 +31,7 @@ type KademGo struct {
 // and as well as forms the random hash for the node.
 func (kdm_p *KademGo) Init(addr *string, gway_addr *string) error {
 	kdm_p.nmap = &nbrmap.NbrMap{}
-	kdm_p.ost = &objstore.ObjStore{}
+	kdm_p.ost = &objmap.ObjMap{}
 	kdm_p.conn = &connector.Connector{}
 
 	kdm_p.nmap.Init()
