@@ -4,13 +4,13 @@
 package connector
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
 	sync "sync"
 
 	"github.com/r0ck3r008/kademgo/utils"
-	"google.golang.org/protobuf/proto"
 )
 
 // Envelope is an encapsulation which would be passed around in go channels.
@@ -68,22 +68,12 @@ func (conn_p *Connector) ReadLoop() {
 			break
 		}
 		// Extra UnMarshal due to pesky Mutex in Google Protobuf which stops from being sent on a channel
-		var pkt *Pkt = &Pkt{}
-		err = proto.Unmarshal(cmdr, pkt)
+		var pkt Pkt = Pkt{}
+		err = json.Unmarshal(cmdr, &pkt)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error in unmarshalling: %s\n", err)
 			os.Exit(1)
 		}
-		hops := pkt.GetHops()
-		if hops != 0 {
-			pkt.Hops = hops - 1
-			var id int64 = pkt.GetRandNum()
-			cmdr, err = proto.Marshal(pkt)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error in marshaling: %s\n", err)
-				os.Exit(1)
-			}
-			var env Envelope = Envelope{id, cmdr, *addr_p}
 			conn_p.sch <- env
 		}
 	}
@@ -93,7 +83,12 @@ func (conn_p *Connector) ReadLoop() {
 // from the node and send them asynchronously to the desired destinations.
 func (conn_p *Connector) WriteLoop() {
 	for env := range conn_p.sch {
-		if _, err := conn_p.conn.WriteToUDP(env.cmds, &env.addr); err != nil {
+		cmds, err := json.Marshal(env.pkt)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error in Marshalling: %s\n", err)
+			break
+		}
+		if _, err := conn_p.conn.WriteToUDP(cmds, &env.addr); err != nil {
 			fmt.Fprintf(os.Stderr, "Error in writing: %s\n", err)
 			break
 		}

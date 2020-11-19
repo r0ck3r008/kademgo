@@ -1,15 +1,11 @@
 package connector
 
 import (
-	"encoding/hex"
-	"fmt"
 	"math/rand"
 	"net"
-	"os"
 	"time"
 
 	"github.com/r0ck3r008/kademgo/utils"
-	"google.golang.org/protobuf/proto"
 )
 
 // Ping requests for a ping reply from the passed in UDP address and returns a bool return value if
@@ -17,13 +13,8 @@ import (
 func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) bool {
 	var rand_num int64 = int64(rand.Int())
 	addr := *addr_p
-	var pkt Pkt = Pkt{Type: Pkt_PingReq, Hash: hex.EncodeToString((*srchash)[:]), RandNum: rand_num, Hops: utils.MAXHOPS}
-	cmds, err := proto.Marshal(&pkt)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error in marshaling: %s\n", err)
-		os.Exit(1)
-	}
 	var env Envelope = Envelope{rand_num, cmds, addr}
+	var pkt Pkt = Pkt{Ttl: utils.MAXHOPS, RandNum: rand_num, Hash: *srchash, Type: PingReq}
 	conn_p.sch <- env
 	time.Sleep(utils.PINGWAIT)
 	// Fetch result from map
@@ -41,12 +32,7 @@ func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) 
 func (conn_p *Connector) FindPeers(srchash *[utils.HASHSZ]byte, gway_addr *string) {
 	var gway_addr_p net.UDPAddr = net.UDPAddr{IP: []byte(*gway_addr), Port: utils.PORTNUM, Zone: ""}
 	var rand_num int64 = int64(rand.Int())
-	var pkt Pkt = Pkt{Type: Pkt_BeginReq, Hash: hex.EncodeToString((*srchash)[:]), RandNum: rand_num, Hops: utils.MAXHOPS}
-	cmds, err := proto.Marshal(&pkt)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error in marshaling: %s\n", err)
-		os.Exit(1)
-	}
 	var env Envelope = Envelope{rand_num, cmds, gway_addr_p}
+	var pkt Pkt = Pkt{Ttl: utils.MAXHOPS, RandNum: rand_num, Hash: *srchash, Type: PingReq}
 	conn_p.sch <- env
 }
