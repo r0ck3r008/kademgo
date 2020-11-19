@@ -16,8 +16,7 @@ import (
 // Envelope is an encapsulation which would be passed around in go channels.
 // This exists since google's protobuf refuses to be send along in the channels.
 type Envelope struct {
-	id   int64
-	cmds []byte
+	pkt  Pkt
 	addr net.UDPAddr
 }
 
@@ -51,7 +50,7 @@ func (conn_p *Connector) Collector() {
 	for env := range conn_p.sch {
 		// Acquire write lock and write to cache
 		conn_p.mut.Lock()
-		conn_p.pcache[env.id] = env
+		conn_p.pcache[env.pkt.RandNum] = env
 		conn_p.mut.Unlock()
 	}
 }
@@ -74,6 +73,9 @@ func (conn_p *Connector) ReadLoop() {
 			fmt.Fprintf(os.Stderr, "Error in unmarshalling: %s\n", err)
 			os.Exit(1)
 		}
+		if pkt.Ttl != 0 {
+			pkt.Ttl--
+			var env Envelope = Envelope{pkt, *addr_p}
 			conn_p.sch <- env
 		}
 	}
