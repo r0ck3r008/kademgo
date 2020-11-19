@@ -39,12 +39,10 @@ func getindx(hash1 *[utils.HASHSZ]byte, hash2 *[utils.HASHSZ]byte) int {
 }
 
 // NbrMapInit is the initiator for the NbrMap and initiates the map of k-buckets.
-func NbrMapInit() (nmap_p *NbrMap) {
+func (nmap_p *NbrMap) Init() {
 	nmap_p = &NbrMap{}
 	nmap_p.bkt = make(map[int]*NbrNode)
 	nmap_p.sz = 0
-
-	return nmap_p
 }
 
 // Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap.

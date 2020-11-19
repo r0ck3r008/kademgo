@@ -32,17 +32,17 @@ type Connector struct {
 }
 
 // ConnectorInit sets up the UDP listening socket, send and recv channels, mutex and the packet cache map.
-func ConnectorInit(addr *string) (*Connector, error) {
-	conn_p, err := net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: utils.PORTNUM, Zone: ""})
+func (conn_p *Connector) Init(addr *string) error {
+	var err error
+	conn_p.conn, err = net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: utils.PORTNUM, Zone: ""})
 	if err != nil {
-		return nil, fmt.Errorf("UDP Create: %s", err)
+		return fmt.Errorf("UDP Create: %s", err)
 	}
-	sch := make(chan Envelope, 100)
-	rch := make(chan Envelope, 100)
-	var mut *sync.Mutex = &sync.Mutex{}
+	conn_p.sch = make(chan Envelope, 100)
+	conn_p.rch = make(chan Envelope, 100)
+	conn_p.mut = &sync.Mutex{}
 
-	var conn *Connector = &Connector{conn: conn_p, sch: sch, rch: rch, mut: mut}
-	return conn, nil
+	return nil
 }
 
 // Collector is intended to be a goroutine that process the received packets in form of Envelope
