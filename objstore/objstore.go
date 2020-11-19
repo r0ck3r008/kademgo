@@ -17,7 +17,7 @@ type ObjStore struct {
 
 // getlvl finds the max character length upto where two hashes are the same.
 func getlvl(hash1 []byte, hash2 []byte) int {
-	var lvl int = -1
+	var lvl int = 0
 	var mlen int
 	if len(hash1) < len(hash2) {
 		mlen = len(hash1)
@@ -25,10 +25,10 @@ func getlvl(hash1 []byte, hash2 []byte) int {
 		mlen = len(hash2)
 	}
 	for lvl < mlen {
-		lvl++
 		if hash1[lvl] != hash2[lvl] {
 			break
 		}
+		lvl++
 	}
 
 	return lvl
