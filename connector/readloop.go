@@ -36,7 +36,13 @@ func (conn_p *Connector) ReadLoop() {
 		if pkt.Ttl != 0 {
 			pkt.Ttl--
 			var env Envelope = Envelope{pkt, *addr_p}
-			conn_p.sch <- env
+			conn_p.rch <- env
 		}
 	}
+}
+
+func (conn_p *Connector) PingRes(env Envelope) {
+	env.pkt.Type = PingRes
+
+	conn_p.sch <- env
 }
