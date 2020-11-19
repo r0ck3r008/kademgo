@@ -46,9 +46,10 @@ func (nmap_p *NbrMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ
 }
 
 // Get is used to see if a neighbour exists in the NeighbourMap, returns error on failure.
-func (nmap_p *NbrMap) Get(hash *[utils.HASHSZ]byte, indx int) (*NbrAddr, error) {
+func (nmap_p *NbrMap) Get(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte) (*NbrAddr, error) {
+	var indx int = utils.GetDist(srchash, dsthash)
 	if node_p, ok := nmap_p.bkt[indx]; ok {
-		return node_p.get(hash)
+		return node_p.get(dsthash)
 	}
 
 	return nil, fmt.Errorf("Not Found!")
