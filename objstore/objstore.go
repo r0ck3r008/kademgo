@@ -2,8 +2,6 @@
 // that the current node possesses. Its provides insertion and checking for existence
 package objstore
 
-import utils "github.com/r0ck3r008/kademgo/utils"
-
 // ObjNode embodies each node in the prefix tree for the ObjStore.
 type ObjNode struct {
 	hash []byte
