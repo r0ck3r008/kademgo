@@ -31,7 +31,7 @@ type Connector struct {
 	rch    chan Envelope
 }
 
-// ConnectorInit sets up the UDP listening socket, send and recv channels, mutex and the packet cache map.
+// Init sets up the UDP listening socket, send and recv channels, mutex and the packet cache map.
 func (conn_p *Connector) Init(addr *string) error {
 	var err error
 	conn_p.conn, err = net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: utils.PORTNUM, Zone: ""})

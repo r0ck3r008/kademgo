@@ -78,7 +78,7 @@ func (obn_p *ObjNode) find(hash []byte) bool {
 	return false
 }
 
-// ObjStoreInit initiates the root in ObjStore.
+// Init initiates the root in ObjStore.
 func (ost_p *ObjStore) Init() {
 	var obj []byte
 	ost_p.root = &ObjNode{

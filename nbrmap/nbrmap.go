@@ -38,7 +38,7 @@ func getindx(hash1 *[utils.HASHSZ]byte, hash2 *[utils.HASHSZ]byte) int {
 	return indx
 }
 
-// NbrMapInit is the initiator for the NbrMap and initiates the map of k-buckets.
+// Init is the initiator for the NbrMap and initiates the map of k-buckets.
 func (nmap_p *NbrMap) Init() {
 	nmap_p = &NbrMap{}
 	nmap_p.bkt = make(map[int]*NbrNode)
