@@ -37,3 +37,16 @@ func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) 
 
 	return ret
 }
+
+func (conn_p *Connector) FindPeers(srchash *[utils.HASHSZ]byte, gway_addr *string) {
+	var gway_addr_p net.UDPAddr = net.UDPAddr{IP: []byte(*gway_addr), Port: utils.PORTNUM, Zone: ""}
+	var rand_num int64 = int64(rand.Int())
+	var pkt Pkt = Pkt{Type: Pkt_BeginReq, Hash: hex.EncodeToString((*srchash)[:]), RandNum: rand_num, Hops: utils.MAXHOPS}
+	cmds, err := proto.Marshal(&pkt)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error in marshaling: %s\n", err)
+		os.Exit(1)
+	}
+	var env Envelope = Envelope{rand_num, cmds, gway_addr_p}
+	conn_p.sch <- env
+}
