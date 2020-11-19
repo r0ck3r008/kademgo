@@ -13,8 +13,8 @@ import (
 func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) bool {
 	var rand_num int64 = int64(rand.Int())
 	addr := *addr_p
-	var env Envelope = Envelope{rand_num, cmds, addr}
 	var pkt Pkt = Pkt{Ttl: utils.MAXHOPS, RandNum: rand_num, Hash: *srchash, Type: PingReq}
+	var env Envelope = Envelope{pkt, addr}
 	conn_p.sch <- env
 	time.Sleep(utils.PINGWAIT)
 	// Fetch result from map
@@ -32,7 +32,7 @@ func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) 
 func (conn_p *Connector) FindPeers(srchash *[utils.HASHSZ]byte, gway_addr *string) {
 	var gway_addr_p net.UDPAddr = net.UDPAddr{IP: []byte(*gway_addr), Port: utils.PORTNUM, Zone: ""}
 	var rand_num int64 = int64(rand.Int())
-	var env Envelope = Envelope{rand_num, cmds, gway_addr_p}
 	var pkt Pkt = Pkt{Ttl: utils.MAXHOPS, RandNum: rand_num, Hash: *srchash, Type: PingReq}
+	var env Envelope = Envelope{pkt, gway_addr_p}
 	conn_p.sch <- env
 }
