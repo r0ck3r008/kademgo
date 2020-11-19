@@ -1,20 +1,66 @@
+// kademgo package is responsible for:
+// 1. Creating a hash for itself
+// 2. Instantiating a nbrmap object
+// 3. Instantiating an objstore object
+// 4. Providing the API for Kademlia RPCs
 package kademgo
 
 import (
 	"fmt"
-	"os"
+	"math/rand"
+	"strconv"
+	"sync"
 
-	"github.com/r0ck3r008/kademgo/node"
+	"github.com/r0ck3r008/kademgo/connector"
+	"github.com/r0ck3r008/kademgo/nbrmap"
+	"github.com/r0ck3r008/kademgo/objstore"
+	"github.com/r0ck3r008/kademgo/utils"
 )
 
-// KademInit is the function that initiates the KademGo Library
-func KademInit() {
-	var bind_addr string = "127.0.0.1"
-	_, err := node.NodeInit(&bind_addr)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s", err)
-		os.Exit(1)
-	}
+// KademGo structure encapsulates the UDP listening port, objstore object,
+// NbrMap object as well as the hash of the node in question.
+type KademGo struct {
+	nmap *nbrmap.NbrMap
+	ost  *objstore.ObjStore
+	hash [utils.HASHSZ]byte
+	conn *connector.Connector
+	wg   *sync.WaitGroup
+}
 
-	fmt.Println("Kademgo")
+// Init is the function that initiates the ObjStore, NbrMap, UDP listener
+// and as well as forms the random hash for the node.
+func (kdm_p *KademGo) Init(addr *string) error {
+	kdm_p.nmap = nbrmap.NbrMapInit()
+	kdm_p.ost = objstore.ObjStoreInit()
+
+	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
+	kdm_p.hash = utils.HashStr([]byte(rnum_str))
+
+	conn, err := connector.ConnectorInit(addr)
+	if err != nil {
+		return fmt.Errorf("Error in starting listener: %s\n", err)
+	}
+	kdm_p.conn = conn
+	var wg = &sync.WaitGroup{}
+	wg.Add(3)
+	go func() {
+		conn.ReadLoop()
+		wg.Done()
+	}()
+	go func() {
+		conn.WriteLoop()
+		wg.Done()
+	}()
+	go func() {
+		conn.Collector()
+		wg.Done()
+	}()
+	kdm_p.wg = wg
+
+	return nil
+}
+
+// DeInit function waits for all the go routines registered to exit.
+func (kdm_p *KademGo) DeInit() {
+	kdm_p.wg.Wait()
 }
