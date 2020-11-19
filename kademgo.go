@@ -29,7 +29,7 @@ type KademGo struct {
 
 // Init is the function that initiates the ObjStore, NbrMap, UDP listener
 // and as well as forms the random hash for the node.
-func (kdm_p *KademGo) Init(addr *string) error {
+func (kdm_p *KademGo) Init(addr *string, gway_addr *string) error {
 	kdm_p.nmap = &nbrmap.NbrMap{}
 	kdm_p.ost = &objstore.ObjStore{}
 	kdm_p.conn = &connector.Connector{}
@@ -58,6 +58,8 @@ func (kdm_p *KademGo) Init(addr *string) error {
 		kdm_p.conn.Collector()
 		kdm_p.wg.Done()
 	}()
+
+	kdm_p.conn.FindPeers(&kdm_p.hash, gway_addr)
 
 	return nil
 }
