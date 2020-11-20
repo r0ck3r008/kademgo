@@ -16,6 +16,9 @@ func (conn_p *Connector) Collector() {
 		case PingReq:
 			wg.Add(1)
 			go func() { conn_p.PingRes(env); wg.Done() }()
+		case Store:
+			wg.Add(1)
+			go func() { conn_p.StoreHandler(env); wg.Done() }()
 		default:
 			// Acquire write lock and write to cache
 			conn_p.mut.Lock()
@@ -54,4 +57,6 @@ func (conn_p *Connector) PingRes(env Envelope) {
 	env.pkt.Type = PingRes
 
 	conn_p.sch <- env
+func (conn_p *Connector) StoreHandler(env Envelope) {
+	// Insert to the ObjMap here
 }

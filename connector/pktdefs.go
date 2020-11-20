@@ -1,6 +1,9 @@
 package connector
 
-import "github.com/r0ck3r008/kademgo/utils"
+import (
+	"github.com/r0ck3r008/kademgo/objmap"
+	"github.com/r0ck3r008/kademgo/utils"
+)
 
 // PktType is the type that defines what the message/packet
 // is supposed to represent.
@@ -20,6 +23,10 @@ const (
 
 	// PingRes is the response to is-alive request.
 	PingRes
+
+	// Store is the type that defines a packet to contain
+	// an object that the node it supposed to store.
+	Store
 )
 
 type Pkt struct {
