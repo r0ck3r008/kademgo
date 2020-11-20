@@ -24,15 +24,15 @@ const (
 type Pkt struct {
 	// Ttl is the number of hops of this particular message.
 	// The message should be dropped if it ever is 0.
-	Ttl int
+	Ttl int `json:"Ttl"`
 
 	// RandNum is a long long int identifier of this message.
 	// This facilitates easy caching of packets internally.
-	RandNum int64
+	RandNum int64 `json:"RandNum"`
 
 	// Hash is the hash of the node sending the message.
-	Hash [utils.HASHSZ]byte
+	Hash [utils.HASHSZ]byte `json:"Hash"`
 
 	// Type is the type of packet from PktType.
-	Type PktType
+	Type PktType `json:"Type"`
 }
