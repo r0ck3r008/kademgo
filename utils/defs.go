@@ -10,6 +10,10 @@ const (
 	// It also is the number of neighbours in each K-Bucket.
 	KVAL = 20
 
+	// ALPHAVAL is the alpha as described in the paper. This determines how many
+	// peers will be called again in the recursive step of the FindPeers.
+	ALPHAVAL = 3
+
 	// HASHSZ defines the bytes needed to store the hash in binary, non encoded format.
 	HASHSZ = sha512.Size
 
