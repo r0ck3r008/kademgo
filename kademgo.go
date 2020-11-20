@@ -50,8 +50,6 @@ func (kdm_p *KademGo) Init(addr *string, gway_addr *string) error {
 	go func() { kdm_p.conn.WriteLoop(); kdm_p.wg.Done() }()
 	go func() { kdm_p.conn.Collector(); kdm_p.wg.Done() }()
 
-	kdm_p.conn.FindPeers(&kdm_p.hash, gway_addr)
-
 	return nil
 }
 

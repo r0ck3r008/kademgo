@@ -48,10 +48,4 @@ func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) 
 	return ret
 }
 
-func (conn_p *Connector) FindPeers(srchash *[utils.HASHSZ]byte, gway_addr *string) {
-	var gway_addr_p net.UDPAddr = net.UDPAddr{IP: []byte(*gway_addr), Port: utils.PORTNUM, Zone: ""}
-	var rand_num int64 = int64(rand.Int())
-	var pkt Pkt = Pkt{Ttl: utils.MAXHOPS, RandNum: rand_num, Hash: *srchash, Type: PingReq}
-	var env Envelope = Envelope{pkt, gway_addr_p}
-	conn_p.sch <- env
 }
