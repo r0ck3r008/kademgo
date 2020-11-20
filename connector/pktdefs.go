@@ -35,4 +35,7 @@ type Pkt struct {
 
 	// Type is the type of packet from PktType.
 	Type PktType `json:"Type"`
+
+	// Obj is the ObjNode type object that only Store PktType uses
+	Obj objmap.ObjNode `json:"Obj"`
 }
