@@ -55,8 +55,11 @@ func (conn_p *Connector) ReadLoop() {
 
 func (conn_p *Connector) PingRes(env Envelope) {
 	env.pkt.Type = PingRes
-
 	conn_p.sch <- env
+
+	// Insert to the NbrMap here.
+}
+
 func (conn_p *Connector) StoreHandler(env Envelope) {
 	// Insert to the ObjMap here
 }
