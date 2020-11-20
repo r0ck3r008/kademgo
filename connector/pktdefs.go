@@ -10,16 +10,8 @@ import (
 type PktType int
 
 const (
-	// BeginReq is the message that is sent when a node first
-	// comes online
-	BeginReq PktType = iota
-
-	// BeginRes is the message that is the reply to BeginReq. Any
-	// node is capable of sedning it.
-	BeginRes
-
 	// PingReq is the is-alive request.
-	PingReq
+	PingReq PktType = iota
 
 	// PingRes is the response to is-alive request.
 	PingRes
