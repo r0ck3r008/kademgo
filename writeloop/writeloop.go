@@ -14,7 +14,6 @@ import (
 )
 
 type WriteLoop struct {
-	sch    chan utils.Envelope
 	pcache *map[int64]utils.Envelope
 	mut    *sync.Mutex
 }

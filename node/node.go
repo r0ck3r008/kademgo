@@ -21,6 +21,7 @@ import (
 // NbrMap object as well as the hash of the node in question.
 type Node struct {
 	hash   [utils.HASHSZ]byte
+	sch    chan utils.Envelope
 	pcache map[int64]utils.Envelope
 	conn   *net.UDPConn
 	wg     *sync.WaitGroup
@@ -37,6 +38,7 @@ func (node_p *Node) Init(addr *string, gway_addr *string) error {
 	node_p.wg = &sync.WaitGroup{}
 	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
 	node_p.hash = utils.HashStr([]byte(rnum_str))
+	node_p.sch = make(chan utils.Envelope, 100)
 
 	node_p.rdl = &readloop.ReadLoop{}
 	node_p.wrl = &writeloop.WriteLoop{}
@@ -58,6 +60,7 @@ func (node_p *Node) Init(addr *string, gway_addr *string) error {
 
 // DeInit function waits for all the go routines registered to exit.
 func (node_p *Node) DeInit() {
+	close(node_p.sch)
 	node_p.rdl.DeInit()
 	node_p.wrl.DeInit()
 	node_p.wg.Wait()
