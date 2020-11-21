@@ -32,7 +32,7 @@ type Node struct {
 
 // Init is the function that initiates the ObjStore, NbrMap, UDP listener
 // and as well as forms the random hash for the node.
-func (node_p *Node) Init(addr *string, gway_addr *string) error {
+func (node_p *Node) Init(addr *string, gway_addr *net.UDPAddr) error {
 	node_p.pcache = make(map[int64]utils.Envelope)
 	node_p.mut = &sync.Mutex{}
 	node_p.wg = &sync.WaitGroup{}
