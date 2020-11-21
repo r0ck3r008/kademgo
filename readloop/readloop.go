@@ -14,14 +14,16 @@ import (
 
 type ReadLoop struct {
 	rch    chan utils.Envelope
+	sch    chan<- utils.Envelope
 	pcache *map[int64]utils.Envelope
 	mut    *sync.Mutex
 	nmap   *nbrmap.NbrMap
 	ost    *objmap.ObjMap
 }
 
-func (rdl_p *ReadLoop) Init(mut *sync.Mutex, pcache *map[int64]utils.Envelope) {
+func (rdl_p *ReadLoop) Init(mut *sync.Mutex, pcache *map[int64]utils.Envelope, sch chan<- utils.Envelope) {
 	rdl_p.rch = make(chan Envelope, 100)
+	rdl_p.sch = sch
 	rdl_p.mut = mut
 	rdl_p.pcache = pcache
 

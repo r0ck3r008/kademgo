@@ -16,16 +16,15 @@ import (
 type WriteLoop struct {
 	pcache *map[int64]utils.Envelope
 	mut    *sync.Mutex
+	// sch has only ony sink and a lot of sources.
+	// The sinc is WriteLoop
+	sch chan utils.Envelope
 }
 
-func (wrl_p *WriteLoop) Init(mut *sync.Mutex, pcache *map[int64]utils.Envelope) {
-	wrl_p.sch = make(chan utils.Envelope, 100)
+func (wrl_p *WriteLoop) Init(mut *sync.Mutex, pcache *map[int64]utils.Envelope, sch chan utils.Envelope) {
 	wrl_p.mut = mut
 	wrl_p.pcache = pcache
-}
-
-func (wrl_p *WriteLoop) DeInit() {
-	close(wrl_p.sch)
+	wrl_p.sch = sch
 }
 
 // WriteLoop is supposed to be run as a goroutine which takes all the packets that need to be sent

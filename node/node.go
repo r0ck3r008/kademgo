@@ -42,8 +42,8 @@ func (node_p *Node) Init(addr *string, gway_addr *string) error {
 
 	node_p.rdl = &readloop.ReadLoop{}
 	node_p.wrl = &writeloop.WriteLoop{}
-	node_p.rdl.Init(rdl_p.mut, &node_p.pcache)
-	node_p.wrl.Init(rdl_p.mut, &node_p.pcache)
+	node_p.rdl.Init(rdl_p.mut, &node_p.pcache, node_p.sch)
+	node_p.wrl.Init(rdl_p.mut, &node_p.pcache, node_p.sch)
 
 	var err error
 	node_p.conn, err = net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: utils.PORTNUM, Zone: ""})
