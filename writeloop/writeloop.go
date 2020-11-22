@@ -45,9 +45,9 @@ func (wrl_p *WriteLoop) WriteLoop(conn_p *net.UDPConn) {
 
 // Ping requests for a ping reply from the passed in UDP address and returns a bool return value if
 // a reply shows up. It waits for utils.PINGWAIT amount of time before it fails.
-func (wrl_p *WriteLoop) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) bool {
+func (wrl_p *WriteLoop) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.IP) bool {
 	var rand_num int64 = int64(rand.Int())
-	addr := *addr_p
+	addr := net.UDPAddr{IP: *addr_p, Port: utils.PORTNUM, Zone: ""}
 	var packet pkt.Packet = pkt.Packet{Ttl: utils.MAXHOPS, RandNum: rand_num, Hash: *srchash, Type: pkt.PingReq}
 	var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: addr}
 	wrl_p.sch <- env
@@ -67,11 +67,12 @@ func (wrl_p *WriteLoop) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) b
 }
 
 // Store is a shoot and forget type of a function. It works in best effort way.
-func (wrl_p *WriteLoop) Store(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr, obj_p *pkt.ObjNode) {
+func (wrl_p *WriteLoop) Store(srchash *[utils.HASHSZ]byte, addr_p *net.IP, obj_p *pkt.ObjAddr) {
 	var rand_num int64 = int64(rand.Int())
 	obj := *obj_p
+	addr := net.UDPAddr{IP: *addr_p, Port: utils.PORTNUM, Zone: ""}
 	var packet pkt.Packet = pkt.Packet{Ttl: utils.MAXHOPS, RandNum: rand_num, Type: pkt.Store, Hash: *srchash, Obj: obj}
-	var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: *addr_p}
+	var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: addr}
 
 	wrl_p.sch <- env
 }
