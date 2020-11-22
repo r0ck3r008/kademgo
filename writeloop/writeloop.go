@@ -76,7 +76,7 @@ func (wrl_p *WriteLoop) Store(srchash *[utils.HASHSZ]byte, addr_p *net.IP, obj_p
 	var rand_num int64 = int64(rand.Int())
 	obj := *obj_p
 	addr := net.UDPAddr{IP: *addr_p, Port: utils.PORTNUM, Zone: ""}
-	var packet pkt.Packet = pkt.Packet{Ttl: utils.MAXHOPS, RandNum: rand_num, Type: pkt.Store, Hash: *srchash, Obj: obj}
+	var packet pkt.Packet = pkt.Packet{RandNum: rand_num, Type: pkt.Store, Hash: *srchash, Obj: obj}
 	var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: addr}
 
 	wrl_p.sch <- env

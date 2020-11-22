@@ -17,10 +17,6 @@ const (
 	// HASHSZ defines the bytes needed to store the hash in binary, non encoded format.
 	HASHSZ = sha512.Size
 
-	// MAXHOPS is the TTL for packets that node processes. Any packet with value of 0
-	// will be dropped by the node that happens to receive that.
-	MAXHOPS = 20
-
 	// PORTNUM defines the standard port that would be used for this application.
 	PORTNUM = 12345
 
