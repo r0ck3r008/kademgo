@@ -32,6 +32,14 @@ const (
 	// Store is the type that defines a packet to contain
 	// an object that the node it supposed to store.
 	Store
+
+	// FindReq is the type that the sender sends as a request to
+	// return Nbrs that the receiver might know.
+	FindReq
+
+	// FindRes is the type that prompts the reeiver to return
+	// `k' Nbrs that it has near the given hash.
+	FindRes
 )
 
 type Packet struct {
