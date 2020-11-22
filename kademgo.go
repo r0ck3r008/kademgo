@@ -4,7 +4,6 @@ package kademgo
 
 import (
 	"fmt"
-	"net"
 	"os"
 
 	"github.com/r0ck3r008/kademgo/node"
@@ -16,8 +15,8 @@ type KademGo struct {
 	node *node.Node
 }
 
-func (kdm_p *KademGo) Init(addr_p *net.UDPAddr) {
 // Init initiates the internal structre, node of KademGo.
+func (kdm_p *KademGo) Init(addr_p *string) {
 	var bind_addr string = "127.0.0.1"
 
 	kdm_p.node = &node.Node{}

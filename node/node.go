@@ -33,7 +33,7 @@ type Node struct {
 
 // Init is the function that initiates the ReaderLoop, WriterLoop, UDP listener
 // and as well as forms the random hash for the node.
-func (node_p *Node) Init(addr *string, gway_addr *net.UDPAddr) error {
+func (node_p *Node) Init(addr *string, gway_addr *string) error {
 	node_p.pcache = make(map[int64]pkt.Envelope)
 	node_p.mut = &sync.RWMutex{}
 	node_p.wg = &sync.WaitGroup{}
