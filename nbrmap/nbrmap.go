@@ -48,3 +48,28 @@ func (nmap_p *NbrMap) Get(srchash, dsthash *[utils.HASHSZ]byte) (*pkt.ObjAddr, e
 
 	return nil, fmt.Errorf("Not Found!")
 }
+
+func (nmap_p *NbrMap) NodeLookup(srchash, dsthash *[utils.HASHSZ]byte) [utils.KVAL]pkt.ObjAddr {
+	var ret [utils.KVAL]pkt.ObjAddr
+	var indx int = utils.GetDist(srchash, dsthash)
+	if node_p, ok := nmap_p.bkt[indx]; ok && node_p.sz == utils.KVAL {
+		// A Deep copy of objects
+		for i := 0; i < utils.KVAL; i++ {
+			ret[i] = *(node_p.cvec[i])
+		}
+	} else {
+		// Get neighbours from from earlier buckets since lesser index buckets are closer.
+		var left int = 0
+		for indx > 0 && left < utils.KVAL {
+			if node_p, ok := nmap_p.bkt[indx]; ok {
+				for j := 0; j < node_p.sz; j++ {
+					ret[left] = *(node_p.cvec[j])
+					left--
+				}
+			}
+			indx--
+		}
+	}
+
+	return ret
+}
