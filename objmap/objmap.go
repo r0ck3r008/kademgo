@@ -27,13 +27,13 @@ func (omap_p *ObjMap) Init() {
 func (omap_p *ObjMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *net.IP) {
 	var indx int = utils.GetDist(srchash, dsthash)
 	if node_p, ok := omap_p.omap[indx]; ok {
-		if _, ok := node_p.nmap[*dsthash]; !ok {
-			omap_p.omap[indx].nmap[*dsthash] = len(omap_p.omap[indx].nvec)
-			omap_p.omap[indx].nvec = append(omap_p.omap[indx].nvec, *obj)
+		if _, ok := node_p.Nmap[*dsthash]; !ok {
+			omap_p.omap[indx].Nmap[*dsthash] = len(omap_p.omap[indx].Nvec)
+			omap_p.omap[indx].Nvec = append(omap_p.omap[indx].Nvec, *obj)
 		}
 	} else {
-		var node_p *ObjNode = &ObjNode{make(map[[utils.HASHSZ]byte]int), []net.IP{*obj}}
-		node_p.nmap[*dsthash] = 0
+		var node_p *pkt.ObjNode = &pkt.ObjNode{Nmap: make(map[[utils.HASHSZ]byte]int), Nvec: []net.IP{*obj}}
+		node_p.Nmap[*dsthash] = 0
 		omap_p.omap[indx] = node_p
 	}
 }
@@ -42,8 +42,8 @@ func (omap_p *ObjMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ
 func (omap_p *ObjMap) Get(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte) (*net.IP, error) {
 	var indx int = utils.GetDist(srchash, dsthash)
 	if node_p, ok := omap_p.omap[indx]; ok {
-		if k, ok := node_p.nmap[*dsthash]; ok {
-			return &omap_p.omap[indx].nvec[k], nil
+		if k, ok := node_p.Nmap[*dsthash]; ok {
+			return &omap_p.omap[indx].Nvec[k], nil
 		}
 	}
 
@@ -57,7 +57,7 @@ func (omap_p *ObjMap) GetAll(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ
 	var ret []*[]net.IP
 	for i := 1; i <= indx; i++ {
 		if node_p, ok := omap_p.omap[i]; ok {
-			ret = append(ret, &node_p.nvec)
+			ret = append(ret, &node_p.Nvec)
 		}
 	}
 
