@@ -50,7 +50,10 @@ type Packet struct {
 	Type PacketType `json:"Type"`
 
 	// Obj is the ObjNode type object that only Store PktType uses
-	Obj objmap.ObjNode `json:"Obj"`
+	Obj ObjNode `json:"Obj"`
+
+	// Nbr is the NbrAddr of the neighbour that FindNode needs
+	Nbr NbrAddr `json:"Nbr"`
 }
 
 // Envelope is an encapsulation which would be passed around in go channels.
