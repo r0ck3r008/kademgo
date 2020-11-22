@@ -18,7 +18,7 @@ type ObjAddr struct {
 
 // PktType is the type that defines what the message/packet
 // is supposed to represent.
-type PacketType int
+type PacketType int16
 
 const (
 	// PingReq is the is-alive request.
@@ -52,8 +52,11 @@ type Packet struct {
 	// Type is the type of packet from PktType.
 	Type PacketType `json:"Type"`
 
-	// Obj is the ObjNode type object that only Store PktType uses
+	// Obj is the ObjNode type object that only Store PktType uses.
 	Obj ObjAddr `json:"Obj,omitempty"`
+
+	// ObjArr is the array of objects if a node returns K-addresses.
+	ObjArr [utils.KVAL]ObjAddr `json:"ObjArr,omitempty"`
 }
 
 // Envelope is an encapsulation which would be passed around in go channels.
