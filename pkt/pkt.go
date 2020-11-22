@@ -53,7 +53,7 @@ type Packet struct {
 	Type PacketType `json:"Type"`
 
 	// Obj is the ObjNode type object that only Store PktType uses
-	Obj ObjAddr `json:"Obj"`
+	Obj ObjAddr `json:"Obj,omitempty"`
 }
 
 // Envelope is an encapsulation which would be passed around in go channels.
