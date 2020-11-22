@@ -9,6 +9,7 @@ import (
 	"net"
 
 	"github.com/r0ck3r008/kademgo/utils"
+	"github.com/r0ck3r008/kademgo/writeloop"
 )
 
 type NbrAddr struct {
@@ -40,7 +41,7 @@ func (nmap_p *NbrMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ
 		nnode_p = nmap_p.bkt[indx]
 	}
 
-	nnode_p.put(srchash, dsthash, obj, conn_p)
+	nnode_p.put(srchash, dsthash, obj, wrl_p)
 
 }
 
