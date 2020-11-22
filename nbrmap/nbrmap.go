@@ -16,7 +16,6 @@ import (
 // NbrMap is a structure that serves as the encapsulation over all the K-Buckets
 // and provides the functionality to look up or insert a new neighbour.
 type NbrMap struct {
-	sz  int
 	bkt map[int]*NbrNode
 }
 
@@ -24,7 +23,6 @@ type NbrMap struct {
 func (nmap_p *NbrMap) Init() {
 	nmap_p = &NbrMap{}
 	nmap_p.bkt = make(map[int]*NbrNode)
-	nmap_p.sz = 0
 }
 
 // Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap.
