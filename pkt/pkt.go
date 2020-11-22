@@ -6,16 +6,9 @@ import (
 	"github.com/r0ck3r008/kademgo/utils"
 )
 
-// ObjNode is a single bucket that stores the objects in a vector.
-// Each object has its index mapped using its hash within the same node.
-type ObjNode struct {
-	Nmap map[[utils.HASHSZ]byte]int
-	Nvec []net.IP
-}
-
-type NbrAddr struct {
-	Addr net.UDPAddr
+type ObjAddr struct {
 	Hash [utils.HASHSZ]byte
+	Addr net.IP
 }
 
 // PktType is the type that defines what the message/packet
@@ -58,10 +51,7 @@ type Packet struct {
 	Type PacketType `json:"Type"`
 
 	// Obj is the ObjNode type object that only Store PktType uses
-	Obj ObjNode `json:"Obj"`
-
-	// Nbr is the NbrAddr of the neighbour that FindNode needs
-	Nbr NbrAddr `json:"Nbr"`
+	Obj ObjAddr `json:"Obj"`
 }
 
 // Envelope is an encapsulation which would be passed around in go channels.
