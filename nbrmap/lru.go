@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/r0ck3r008/kademgo/utils"
+	"github.com/r0ck3r008/kademgo/writeloop"
 )
 
 // access maps the address of a neighbor back to its saved hash.
