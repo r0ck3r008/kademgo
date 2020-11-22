@@ -1,3 +1,5 @@
+// writeloop is the loop that gets the packets that need to be send out
+// per requestors all over the library.
 package writeloop
 
 import (
@@ -13,14 +15,17 @@ import (
 	"github.com/r0ck3r008/kademgo/utils"
 )
 
+// WriteLoop is the handle that each sender that needs to put out anything to the wire
+// gets and eventually calls one of the methods of WriteLoop.
 type WriteLoop struct {
 	pcache *map[int64]pkt.Envelope
 	mut    *sync.RWMutex
 	// sch has only ony sink and a lot of sources.
-	// The sinc is WriteLoop
+	// The sink is WriteLoop
 	sch chan pkt.Envelope
 }
 
+// Init initiates all the internal members of WriteLoop.
 func (wrl_p *WriteLoop) Init(mut *sync.RWMutex, pcache *map[int64]pkt.Envelope, sch chan pkt.Envelope) {
 	wrl_p.mut = mut
 	wrl_p.pcache = pcache

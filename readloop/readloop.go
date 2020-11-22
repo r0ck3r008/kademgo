@@ -1,3 +1,4 @@
+// readloop package implements the handler logic of the packets received by the peer.
 package readloop
 
 import (
@@ -12,6 +13,8 @@ import (
 	"github.com/r0ck3r008/kademgo/pkt"
 )
 
+// ReadLoop structure is the handler that node has and uses to asynchronously
+// receive packets and process or cache.
 type ReadLoop struct {
 	rch    chan pkt.Envelope
 	sch    chan<- pkt.Envelope
@@ -21,6 +24,7 @@ type ReadLoop struct {
 	ost    *objmap.ObjMap
 }
 
+// Init initiates the internal members of the ReadLoop type.
 func (rdl_p *ReadLoop) Init(mut *sync.RWMutex, pcache *map[int64]pkt.Envelope, sch chan<- pkt.Envelope) {
 	rdl_p.rch = make(chan pkt.Envelope, 100)
 	rdl_p.sch = sch
@@ -33,6 +37,7 @@ func (rdl_p *ReadLoop) Init(mut *sync.RWMutex, pcache *map[int64]pkt.Envelope, s
 	rdl_p.ost.Init()
 }
 
+// DeInit closes the receive channel and makes the Collector exit.
 func (rdl_p *ReadLoop) DeInit() {
 	close(rdl_p.rch)
 }
@@ -78,11 +83,14 @@ func (rdl_p *ReadLoop) ReadLoop(conn_p *net.UDPConn) {
 		if packet.Ttl != 0 {
 			packet.Ttl--
 			var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: *addr_p}
+			// BUG: This might make the application panic if DeInit on ReadLoop is called while
+			// receive channel is being written to with a new packet.
 			rdl_p.rch <- env
 		}
 	}
 }
 
+// PingRes is the handler of the Ping Request that node receives.
 func (rdl_p *ReadLoop) PingRes(env pkt.Envelope) {
 	env.Pkt.Type = pkt.PingRes
 	rdl_p.sch <- env

@@ -1,8 +1,8 @@
-// kademgo package is responsible for:
+// node package is responsible for:
 // 1. Creating a hash for itself
-// 2. Instantiating a nbrmap object
-// 3. Instantiating an objstore object
-// 4. Providing the API for Kademlia RPCs
+// 2. Creating a UDPConn on the given bind address.
+// 3. Instantiating Reader and WriterLoop objects.
+// 4. Initiating Reader, Writer and Collector loops.
 package node
 
 import (
@@ -31,7 +31,7 @@ type Node struct {
 	mut    *sync.RWMutex
 }
 
-// Init is the function that initiates the ObjStore, NbrMap, UDP listener
+// Init is the function that initiates the ReaderLoop, WriterLoop, UDP listener
 // and as well as forms the random hash for the node.
 func (node_p *Node) Init(addr *string, gway_addr *net.UDPAddr) error {
 	node_p.pcache = make(map[int64]pkt.Envelope)

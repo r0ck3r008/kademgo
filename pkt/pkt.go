@@ -1,3 +1,5 @@
+// pkt is the package that defines all the packets and its subtypes that would
+// eventually be marshalled and put on wire.
 package pkt
 
 import (
@@ -6,6 +8,9 @@ import (
 	"github.com/r0ck3r008/kademgo/utils"
 )
 
+// ObjAddr is the generic struct that can represent either a neighbour
+// using Addr as address of the node and Hash as its hash value or an object
+// in the network with Addr being the owner of that object.
 type ObjAddr struct {
 	Hash [utils.HASHSZ]byte
 	Addr net.IP
@@ -35,6 +40,7 @@ const (
 	FindRes
 )
 
+// Packet is the final packet structure that will be marshalled and put on wire eventually.
 type Packet struct {
 	// Ttl is the number of hops of this particular message.
 	// The message should be dropped if it ever is 0.
