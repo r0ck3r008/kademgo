@@ -31,12 +31,12 @@ func (omap_p *ObjMap) Init() {
 }
 
 // Insert inserts the object accoring to its distance from the node.
-func (omap_p *ObjMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *net.IP) {
+func (omap_p *ObjMap) Insert(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP) {
 	var indx int = utils.GetDist(srchash, dsthash)
 	if node_p, ok := omap_p.omap[indx]; ok {
 		if _, ok := node_p.Nmap[*dsthash]; !ok {
-			omap_p.omap[indx].Nmap[*dsthash] = len(omap_p.omap[indx].Nvec)
-			omap_p.omap[indx].Nvec = append(omap_p.omap[indx].Nvec, &pkt.ObjAddr{Hash: *dsthash, Addr: *obj})
+			node_p.Nmap[*dsthash] = len(node_p.Nvec)
+			node_p.Nvec = append(node_p.Nvec, &pkt.ObjAddr{Hash: *dsthash, Addr: *obj})
 		}
 	} else {
 		var node_p *ObjNode = &ObjNode{Nmap: make(map[[utils.HASHSZ]byte]int),
@@ -51,7 +51,7 @@ func (omap_p *ObjMap) Get(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]by
 	var indx int = utils.GetDist(srchash, dsthash)
 	if node_p, ok := omap_p.omap[indx]; ok {
 		if k, ok := node_p.Nmap[*dsthash]; ok {
-			return omap_p.omap[indx].Nvec[k], nil
+			return node_p.Nvec[k], nil
 		}
 	}
 
