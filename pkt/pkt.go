@@ -42,10 +42,6 @@ const (
 
 // Packet is the final packet structure that will be marshalled and put on wire eventually.
 type Packet struct {
-	// Ttl is the number of hops of this particular message.
-	// The message should be dropped if it ever is 0.
-	Ttl int `json:"Ttl"`
-
 	// RandNum is a long long int identifier of this message.
 	// This facilitates easy caching of packets internally.
 	RandNum int64 `json:"RandNum"`

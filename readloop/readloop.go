@@ -80,13 +80,10 @@ func (rdl_p *ReadLoop) ReadLoop(conn_p *net.UDPConn) {
 			fmt.Fprintf(os.Stderr, "Error in unmarshalling: %s\n", err)
 			os.Exit(1)
 		}
-		if packet.Ttl != 0 {
-			packet.Ttl--
-			var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: *addr_p}
-			// BUG: This might make the application panic if DeInit on ReadLoop is called while
-			// receive channel is being written to with a new packet.
-			rdl_p.rch <- env
-		}
+		var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: *addr_p}
+		// BUG: This might make the application panic if DeInit on ReadLoop is called while
+		// receive channel is being written to with a new packet.
+		rdl_p.rch <- env
 	}
 }
 

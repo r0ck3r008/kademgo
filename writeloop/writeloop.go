@@ -53,7 +53,7 @@ func (wrl_p *WriteLoop) WriteLoop(conn_p *net.UDPConn) {
 func (wrl_p *WriteLoop) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.IP) bool {
 	var rand_num int64 = int64(rand.Int())
 	addr := net.UDPAddr{IP: *addr_p, Port: utils.PORTNUM, Zone: ""}
-	var packet pkt.Packet = pkt.Packet{Ttl: utils.MAXHOPS, RandNum: rand_num, Hash: *srchash, Type: pkt.PingReq}
+	var packet pkt.Packet = pkt.Packet{RandNum: rand_num, Hash: *srchash, Type: pkt.PingReq}
 	var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: addr}
 	wrl_p.sch <- env
 	time.Sleep(utils.PINGWAIT)
