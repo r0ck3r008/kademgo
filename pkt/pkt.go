@@ -3,9 +3,20 @@ package pkt
 import (
 	"net"
 
-	"github.com/r0ck3r008/kademgo/objmap"
 	"github.com/r0ck3r008/kademgo/utils"
 )
+
+// ObjNode is a single bucket that stores the objects in a vector.
+// Each object has its index mapped using its hash within the same node.
+type ObjNode struct {
+	Nmap map[[utils.HASHSZ]byte]int
+	Nvec []net.IP
+}
+
+type NbrAddr struct {
+	Addr net.UDPAddr
+	Hash [utils.HASHSZ]byte
+}
 
 // PktType is the type that defines what the message/packet
 // is supposed to represent.

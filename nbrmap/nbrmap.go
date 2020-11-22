@@ -6,16 +6,11 @@ package nbrmap
 
 import (
 	"fmt"
-	"net"
 
+	"github.com/r0ck3r008/kademgo/pkt"
 	"github.com/r0ck3r008/kademgo/utils"
 	"github.com/r0ck3r008/kademgo/writeloop"
 )
-
-type NbrAddr struct {
-	Addr net.UDPAddr
-	Hash [utils.HASHSZ]byte
-}
 
 // NbrMap is a structure that serves as the encapsulation over all the K-Buckets
 // and provides the functionality to look up or insert a new neighbour.

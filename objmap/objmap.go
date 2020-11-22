@@ -9,15 +9,9 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/r0ck3r008/kademgo/pkt"
 	"github.com/r0ck3r008/kademgo/utils"
 )
-
-// ObjNode is a single bucket that stores the objects in a vector.
-// Each object has its index mapped using its hash within the same node.
-type ObjNode struct {
-	nmap map[[utils.HASHSZ]byte]int
-	nvec []net.IP
-}
 
 // ObjMap is the high level mapping of distances from the node to seprate buckets.
 type ObjMap struct {
