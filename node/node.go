@@ -28,14 +28,14 @@ type Node struct {
 	wg     *sync.WaitGroup
 	rdl    *readloop.ReadLoop
 	wrl    *writeloop.WriteLoop
-	mut    *sync.Mutex
+	mut    *sync.RWMutex
 }
 
 // Init is the function that initiates the ObjStore, NbrMap, UDP listener
 // and as well as forms the random hash for the node.
 func (node_p *Node) Init(addr *string, gway_addr *net.UDPAddr) error {
 	node_p.pcache = make(map[int64]pkt.Envelope)
-	node_p.mut = &sync.Mutex{}
+	node_p.mut = &sync.RWMutex{}
 	node_p.wg = &sync.WaitGroup{}
 	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
 	node_p.hash = utils.HashStr([]byte(rnum_str))

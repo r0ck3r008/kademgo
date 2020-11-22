@@ -9,20 +9,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/r0ck3r008/kademgo/objmap"
 	"github.com/r0ck3r008/kademgo/pkt"
 	"github.com/r0ck3r008/kademgo/utils"
 )
 
 type WriteLoop struct {
 	pcache *map[int64]pkt.Envelope
-	mut    *sync.Mutex
+	mut    *sync.RWMutex
 	// sch has only ony sink and a lot of sources.
 	// The sinc is WriteLoop
 	sch chan pkt.Envelope
 }
 
-func (wrl_p *WriteLoop) Init(mut *sync.Mutex, pcache *map[int64]pkt.Envelope, sch chan pkt.Envelope) {
+func (wrl_p *WriteLoop) Init(mut *sync.RWMutex, pcache *map[int64]pkt.Envelope, sch chan pkt.Envelope) {
 	wrl_p.mut = mut
 	wrl_p.pcache = pcache
 	wrl_p.sch = sch
@@ -55,12 +54,14 @@ func (wrl_p *WriteLoop) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) b
 	time.Sleep(utils.PINGWAIT)
 	// Fetch result from map
 	var ret bool = false
-	wrl_p.mut.Lock()
+	wrl_p.mut.RLock()
 	if _, ok := (*wrl_p.pcache)[rand_num]; ok {
 		ret = true
+		wrl_p.mut.Lock()
 		delete((*wrl_p.pcache), rand_num)
+		wrl_p.mut.Unlock()
 	}
-	wrl_p.mut.Unlock()
+	wrl_p.mut.RUnlock()
 
 	return ret
 }

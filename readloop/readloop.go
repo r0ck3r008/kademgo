@@ -16,12 +16,12 @@ type ReadLoop struct {
 	rch    chan pkt.Envelope
 	sch    chan<- pkt.Envelope
 	pcache *map[int64]pkt.Envelope
-	mut    *sync.Mutex
+	mut    *sync.RWMutex
 	nmap   *nbrmap.NbrMap
 	ost    *objmap.ObjMap
 }
 
-func (rdl_p *ReadLoop) Init(mut *sync.Mutex, pcache *map[int64]pkt.Envelope, sch chan<- pkt.Envelope) {
+func (rdl_p *ReadLoop) Init(mut *sync.RWMutex, pcache *map[int64]pkt.Envelope, sch chan<- pkt.Envelope) {
 	rdl_p.rch = make(chan pkt.Envelope, 100)
 	rdl_p.sch = sch
 	rdl_p.mut = mut
