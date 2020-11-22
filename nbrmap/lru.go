@@ -37,24 +37,26 @@ func (cache_p *NbrNode) put(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, w
 		cache_p.cvec = append(cache_p.cvec, &pkt.ObjAddr{Hash: *dsthash, Addr: *obj})
 	} else {
 		// Not Found
+		var old_p *pkt.ObjAddr = cache_p.cvec[0]
+
 		// if length of cvec is == KVAL, remove the first element from front
 		// of cvec and cmap if ping of the least recently used fails
-		veclen := len(cache_p.cvec)
-		if veclen == utils.KVAL {
-			// Remove the lease recently used
-			var old_p *pkt.ObjAddr
-			old_p, cache_p.cvec = cache_p.cvec[0], cache_p.cvec[1:]
-
-			if !wrl_p.Ping(srchash, &old_p.Addr) {
-				// If ping fails, add the new one
-				delete(cache_p.cmap, old_p.Hash)
-				cache_p.cvec = append(cache_p.cvec, &pkt.ObjAddr{Hash: *dsthash, Addr: *obj})
-				cache_p.cmap[*dsthash] = veclen
-			} else {
-				// If ping succeedes, add the old one to back
+		if cache_p.sz == utils.KVAL {
+			cache_p.cvec = cache_p.cvec[1:]
+			if wrl_p.Ping(srchash, &old_p.Addr) {
+				// If ping succeedes, add the old one to the back
 				cache_p.cvec = append(cache_p.cvec, old_p)
+				return
+			} else {
+				// If ping fails delete the lease used one
+				delete(cache_p.cmap, old_p.Hash)
+				cache_p.sz--
 			}
 		}
+		// If it reaches here, append the new one and increase the Sz by 1
+		cache_p.cvec = append(cache_p.cvec, &pkt.ObjAddr{Hash: *dsthash, Addr: *obj})
+		cache_p.cmap[*dsthash] = cache_p.sz
+		cache_p.sz++
 	}
 }
 
