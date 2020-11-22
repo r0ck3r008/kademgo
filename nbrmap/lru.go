@@ -3,13 +3,14 @@ package nbrmap
 import (
 	"fmt"
 
+	"github.com/r0ck3r008/kademgo/pkt"
 	"github.com/r0ck3r008/kademgo/utils"
 	"github.com/r0ck3r008/kademgo/writeloop"
 )
 
 // access maps the address of a neighbor back to its saved hash.
 type access struct {
-	obj  *NbrAddr
+	obj  *pkt.NbrAddr
 	hash [utils.HASHSZ]byte
 }
 
@@ -34,11 +35,11 @@ func nbrnodeinit() (cache_p *NbrNode) {
 // put is used to insert a new neighbour into the cached list of neighbours.
 // It uses LRU eviction policy based on an irresponsive last contacted neighbour
 // in case of a filled bucket.
-func (cache_p *NbrNode) put(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *NbrAddr, wrl_p *writeloop.WriteLoop) {
+func (cache_p *NbrNode) put(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *pkt.NbrAddr, wrl_p *writeloop.WriteLoop) {
 	if indx, ok := cache_p.cmap[*dsthash]; ok && (indx != len(cache_p.cvec)-1) {
 		// Found! Now remove it from where ever it is and push to the back
 		cache_p.cvec = append(cache_p.cvec[:indx], cache_p.cvec[indx+1:]...)
-		var addr NbrAddr = *obj
+		var addr pkt.NbrAddr = *obj
 		cache_p.cvec = append(cache_p.cvec, &access{&addr, *dsthash})
 	} else {
 		// Not Found
@@ -53,7 +54,7 @@ func (cache_p *NbrNode) put(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]
 			if !wrl_p.Ping(srchash, &old_p.obj.Addr) {
 				// If ping fails, add the new one
 				delete(cache_p.cmap, old_p.hash)
-				var addr NbrAddr = *obj
+				var addr pkt.NbrAddr = *obj
 				cache_p.cvec = append(cache_p.cvec, &access{&addr, *dsthash})
 				cache_p.cmap[*dsthash] = veclen
 			} else {
@@ -65,7 +66,7 @@ func (cache_p *NbrNode) put(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]
 }
 
 // get fetches the neighbour if it exists in the cache, returns error on faliure.
-func (cache_p *NbrNode) get(hash *[utils.HASHSZ]byte) (*NbrAddr, error) {
+func (cache_p *NbrNode) get(hash *[utils.HASHSZ]byte) (*pkt.NbrAddr, error) {
 	if indx, ok := cache_p.cmap[*hash]; ok {
 		return cache_p.cvec[indx].obj, nil
 	}

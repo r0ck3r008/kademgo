@@ -15,12 +15,12 @@ import (
 
 // ObjMap is the high level mapping of distances from the node to seprate buckets.
 type ObjMap struct {
-	omap map[int]*ObjNode
+	omap map[int]*pkt.ObjNode
 }
 
 // Init initialized the ObjMap
 func (omap_p *ObjMap) Init() {
-	omap_p.omap = make(map[int]*ObjNode)
+	omap_p.omap = make(map[int]*pkt.ObjNode)
 }
 
 // Insert inserts the object accoring to its distance from the node.

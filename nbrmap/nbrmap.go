@@ -28,7 +28,7 @@ func (nmap_p *NbrMap) Init() {
 
 // Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap.
 // This should be invoked as a go routine.
-func (nmap_p *NbrMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *NbrAddr, wrl_p *writeloop.WriteLoop) {
+func (nmap_p *NbrMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte, obj *pkt.NbrAddr, wrl_p *writeloop.WriteLoop) {
 	var indx int = utils.GetDist(srchash, dsthash)
 	nnode_p, ok := nmap_p.bkt[indx]
 	if !ok {
@@ -41,7 +41,7 @@ func (nmap_p *NbrMap) Insert(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ
 }
 
 // Get is used to see if a neighbour exists in the NeighbourMap, returns error on failure.
-func (nmap_p *NbrMap) Get(srchash *[utils.HASHSZ]byte, dsthash *[utils.HASHSZ]byte) (*NbrAddr, error) {
+func (nmap_p *NbrMap) Get(srchash, dsthash *[utils.HASHSZ]byte) (*pkt.NbrAddr, error) {
 	var indx int = utils.GetDist(srchash, dsthash)
 	if node_p, ok := nmap_p.bkt[indx]; ok {
 		return node_p.get(dsthash)
