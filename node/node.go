@@ -52,9 +52,9 @@ func (node_p *Node) Init(addr *string, gway_addr *net.UDPAddr) error {
 		return fmt.Errorf("UDP Create: %s", err)
 	}
 	node_p.wg.Add(3)
-	go func() { node_p.rdl.ReadLoop(node_p.conn); kdm_p.wg.Done() }()
-	go func() { node_p.wrl.WriteLoop(node_p.conn); kdm_p.wg.Done() }()
-	go func() { node_p.rdl.Collector(); kdm_p.wg.Done() }()
+	go func() { node_p.rdl.ReadLoop(node_p.conn); node_p.wg.Done() }()
+	go func() { node_p.wrl.WriteLoop(node_p.conn); node_p.wg.Done() }()
+	go func() { node_p.rdl.Collector(); node_p.wg.Done() }()
 
 	return nil
 }
@@ -63,6 +63,5 @@ func (node_p *Node) Init(addr *string, gway_addr *net.UDPAddr) error {
 func (node_p *Node) DeInit() {
 	close(node_p.sch)
 	node_p.rdl.DeInit()
-	node_p.wrl.DeInit()
 	node_p.wg.Wait()
 }
