@@ -15,8 +15,11 @@ type KademGo struct {
 func (kdm_p *KademGo) Init(addr_p *net.UDPAddr) {
 	var bind_addr string = "127.0.0.1"
 
-	kdm_p.node = &Node{}
-	kdm_p.node.Init(&bind_addr, addr_p)
+	kdm_p.node = &node.Node{}
+	if err := kdm_p.node.Init(&bind_addr, addr_p); err != nil {
+		fmt.Fprintf(os.Stderr, "Error in initiating node: %s\n", err)
+		os.Exit(1)
+	}
 }
 
 func (kdm_p *KademGo) DeInit() {
