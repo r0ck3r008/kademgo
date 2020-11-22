@@ -6,8 +6,8 @@
 package node
 
 import (
-	"crypto/rand"
 	"fmt"
+	"math/rand"
 	"net"
 	"strconv"
 	"sync"
