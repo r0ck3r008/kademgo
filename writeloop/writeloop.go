@@ -67,7 +67,7 @@ func (wrl_p *WriteLoop) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr) b
 }
 
 // Store is a shoot and forget type of a function. It works in best effort way.
-func (wrl_p *WriteLoop) Store(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr, obj_p *objmap.ObjNode) {
+func (wrl_p *WriteLoop) Store(srchash *[utils.HASHSZ]byte, addr_p *net.UDPAddr, obj_p *pkt.ObjNode) {
 	var rand_num int64 = int64(rand.Int())
 	obj := *obj_p
 	var packet pkt.Packet = pkt.Packet{Ttl: utils.MAXHOPS, RandNum: rand_num, Type: pkt.Store, Hash: *srchash, Obj: obj}
