@@ -59,15 +59,19 @@ func (nmap_p *NbrMap) NodeLookup(srchash, dsthash *[utils.HASHSZ]byte) [utils.KV
 		}
 	} else {
 		// Get neighbours from from earlier buckets since lesser index buckets are closer.
-		var left int = 0
-		for indx > 0 && left < utils.KVAL {
-			if node_p, ok := nmap_p.bkt[indx]; ok {
+		var i int = 0
+		var indx_tmp int = indx
+		for indx_tmp < utils.HASHSZ && i < utils.KVAL {
+			if node_p, ok := nmap_p.bkt[indx_tmp]; ok {
 				for j := 0; j < node_p.sz; j++ {
-					ret[left] = *(node_p.cvec[j])
-					left--
+					ret[i] = *(node_p.cvec[j])
+					i--
 				}
 			}
-			indx--
+			indx_tmp--
+			if indx_tmp == 0 {
+				indx_tmp = indx + 1
+			}
 		}
 	}
 
