@@ -4,6 +4,7 @@ The project aims to adhere to vanilla Kademlia information protocol as described
 
 #### Dependencies
 * go
+* godoc (optional: for documentation)
 
 #### Usage
 The kademgo library can be imported in any project like regular libraries.
@@ -17,6 +18,17 @@ import "github.com/r0ck3r008/kademgo"
 ```
 in the project.
 The project has actively mantained [godoc](https://blog.golang.org/godoc) based comments. This makes easier for community to figure out how code is structured.
+
+To access the documentation,
+```bash
+# Clone the repository
+git clone https://github.com/r0ck3r008/kademgo
+# Go to directory root
+cd kademgo
+# Use Godoc HTTP server
+godoc
+```
+Then in your browser, visit <http://localhost:6060/pkg/github.com/r0ck3r008/kademgo>.
 
 #### Contributing
 This project aims to follow all the general guidelines mentioned in official go documentation in [Effective Go](https://golang.org/doc/effective_go.html).
