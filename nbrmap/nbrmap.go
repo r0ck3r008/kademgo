@@ -10,7 +10,7 @@ import (
 
 	"github.com/r0ck3r008/kademgo/pkt"
 	"github.com/r0ck3r008/kademgo/utils"
-	"github.com/r0ck3r008/kademgo/writeloop"
+	"github.com/r0ck3r008/kademgo/connector"
 )
 
 // NbrMap is a structure that serves as the encapsulation over all the K-Buckets
@@ -21,13 +21,12 @@ type NbrMap struct {
 
 // Init is the initiator for the NbrMap and initiates the map of k-buckets.
 func (nmap_p *NbrMap) Init() {
-	nmap_p = &NbrMap{}
 	nmap_p.bkt = make(map[int]*NbrNode)
 }
 
 // Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap.
 // This should be invoked as a go routine.
-func (nmap_p *NbrMap) Insert(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, wrl_p *writeloop.WriteLoop) {
+func (nmap_p *NbrMap) Insert(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, conn_p *Connector.connector) {
 	var indx int = utils.GetDist(srchash, dsthash)
 	nnode_p, ok := nmap_p.bkt[indx]
 	if !ok {
@@ -35,7 +34,7 @@ func (nmap_p *NbrMap) Insert(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, 
 		nnode_p = nmap_p.bkt[indx]
 	}
 
-	nnode_p.put(srchash, dsthash, obj, wrl_p)
+	nnode_p.put(srchash, dsthash, obj, conn_p)
 
 }
 

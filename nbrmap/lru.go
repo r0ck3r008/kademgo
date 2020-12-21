@@ -6,7 +6,7 @@ import (
 
 	"github.com/r0ck3r008/kademgo/pkt"
 	"github.com/r0ck3r008/kademgo/utils"
-	"github.com/r0ck3r008/kademgo/writeloop"
+	"github.com/r0ck3r008/kademgo/connector"
 )
 
 // NbrNode serves as the LRU cache for the Neighbours and represents a particular
@@ -30,7 +30,7 @@ func nbrnodeinit() (cache_p *NbrNode) {
 // put is used to insert a new neighbour into the cached list of neighbours.
 // It uses LRU eviction policy based on an irresponsive last contacted neighbour
 // in case of a filled bucket.
-func (cache_p *NbrNode) put(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, wrl_p *writeloop.WriteLoop) {
+func (cache_p *NbrNode) put(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, conn_p *connector.Connector) {
 	if indx, ok := cache_p.cmap[*dsthash]; ok && (indx != len(cache_p.cvec)-1) {
 		// Found! Now remove it from where ever it is and push to the back
 		cache_p.cvec = append(cache_p.cvec[:indx], cache_p.cvec[indx+1:]...)
@@ -43,7 +43,7 @@ func (cache_p *NbrNode) put(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, w
 		// of cvec and cmap if ping of the least recently used fails
 		if cache_p.sz == utils.KVAL {
 			cache_p.cvec = cache_p.cvec[1:]
-			if wrl_p.Ping(srchash, &old_p.Addr) {
+			if conn_p.Ping(srchash, &old_p.Addr) {
 				// If ping succeedes, add the old one to the back
 				cache_p.cvec = append(cache_p.cvec, old_p)
 				return
