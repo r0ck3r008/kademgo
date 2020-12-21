@@ -1,5 +1,4 @@
-// readloop package implements the handler logic of the packets received by the peer.
-package readloop
+package connector
 
 import (
 	"encoding/json"
@@ -8,43 +7,34 @@ import (
 	"os"
 	sync "sync"
 
-	"github.com/r0ck3r008/kademgo/nbrmap"
-	"github.com/r0ck3r008/kademgo/objmap"
 	"github.com/r0ck3r008/kademgo/pkt"
 )
 
-// ReadLoop structure is the handler that node has and uses to asynchronously
+// readLoop structure is the handler that node has and uses to asynchronously
 // receive packets and process or cache.
-type ReadLoop struct {
+type readloop struct {
 	rch    chan pkt.Envelope
 	sch    chan<- pkt.Envelope
 	pcache *map[int64]pkt.Envelope
 	mut    *sync.RWMutex
-	nmap   *nbrmap.NbrMap
-	ost    *objmap.ObjMap
 }
 
-// Init initiates the internal members of the ReadLoop type.
-func (rdl_p *ReadLoop) Init(mut *sync.RWMutex, pcache *map[int64]pkt.Envelope, sch chan<- pkt.Envelope) {
+// init initiates the internal members of the ReadLoop type.
+func (rdl_p *readloop) init(mut *sync.RWMutex, pcache *map[int64]pkt.Envelope, sch chan<- pkt.Envelope) {
 	rdl_p.rch = make(chan pkt.Envelope, 100)
 	rdl_p.sch = sch
 	rdl_p.mut = mut
 	rdl_p.pcache = pcache
-
-	rdl_p.nmap = &nbrmap.NbrMap{}
-	rdl_p.ost = &objmap.ObjMap{}
-	rdl_p.nmap.Init()
-	rdl_p.ost.Init()
 }
 
-// DeInit closes the receive channel and makes the Collector exit.
-func (rdl_p *ReadLoop) DeInit() {
+// deinit closes the receive channel and makes the Collector exit.
+func (rdl_p *readloop) deinit() {
 	close(rdl_p.rch)
 }
 
 // Collector is intended to be a goroutine that process the received packets in form of Envelope
 // struct and caches it in the connector cache based on the identifier.
-func (rdl_p *ReadLoop) Collector() {
+func (rdl_p *readloop) collector() {
 	wg := sync.WaitGroup{}
 	for env := range rdl_p.rch {
 		switch env.Pkt.Type {
@@ -66,7 +56,7 @@ func (rdl_p *ReadLoop) Collector() {
 
 // ReadLoop is supposed to be run as a go routine which can read all the messages comming in
 // to the node and send those along, if the TTL has not expired, to the Collector.
-func (rdl_p *ReadLoop) ReadLoop(conn_p *net.UDPConn) {
+func (rdl_p *readloop) readloop(conn_p *net.UDPConn) {
 	for {
 		var cmdr []byte
 		_, addr_p, err := conn_p.ReadFromUDP(cmdr)
@@ -88,13 +78,13 @@ func (rdl_p *ReadLoop) ReadLoop(conn_p *net.UDPConn) {
 }
 
 // PingRes is the handler of the Ping Request that node receives.
-func (rdl_p *ReadLoop) PingRes(env pkt.Envelope) {
+func (rdl_p *readloop) PingRes(env pkt.Envelope) {
 	env.Pkt.Type = pkt.PingRes
 	rdl_p.sch <- env
 
 	// Insert to the NbrMap here.
 }
 
-func (rdl_p *ReadLoop) StoreHandler(env pkt.Envelope) {
+func (rdl_p *readloop) StoreHandler(env pkt.Envelope) {
 	// Insert to the ObjMap here
 }
