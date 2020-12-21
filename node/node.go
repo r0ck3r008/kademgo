@@ -10,6 +10,8 @@ import (
 	"strconv"
 
 	"github.com/r0ck3r008/kademgo/connector"
+	"github.com/r0ck3r008/kademgo/nbrmap"
+	"github.com/r0ck3r008/kademgo/objmap"
 	"github.com/r0ck3r008/kademgo/utils"
 )
 
@@ -18,6 +20,8 @@ import (
 type Node struct {
 	hash   [utils.HASHSZ]byte
 	conn   *connector.Connector
+	omap   *objmap.ObjMap
+	nmap   *nbrmap.NbrMap
 }
 
 // Init is the function that initiates the ReaderLoop, WriterLoop, UDP listener
@@ -25,6 +29,12 @@ type Node struct {
 func (node_p *Node) Init(addr *string, gway_addr *string) error {
 	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
 	node_p.hash = utils.HashStr([]byte(rnum_str))
+
+	node_p.omap = &objmap.ObjMap{}
+	node_p.nbrmap = &nbrmap.NbrMap{}
+
+	node_p.omap.Init()
+	node_p.nbrmap.Init()
 
 	node_p.conn = &connector.Connector{}
 	if err := node_p.conn.Init(addr); err != nil {
