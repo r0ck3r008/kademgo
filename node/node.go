@@ -31,10 +31,10 @@ func (node_p *Node) Init(addr *string, gway_addr *string) error {
 	node_p.hash = utils.HashStr([]byte(rnum_str))
 
 	node_p.omap = &objmap.ObjMap{}
-	node_p.nbrmap = &nbrmap.NbrMap{}
+	node_p.nmap = &nbrmap.NbrMap{}
 
 	node_p.omap.Init()
-	node_p.nbrmap.Init()
+	node_p.nmap.Init()
 
 	node_p.conn = &connector.Connector{}
 	if err := node_p.conn.Init(addr); err != nil {
