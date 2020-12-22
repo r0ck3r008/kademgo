@@ -59,7 +59,8 @@ func (conn_p *Connector) PingRes(env pkt.Envelope) {
 	env.Pkt.Type = pkt.PingRes
 	conn_p.sch <- env
 
-	// Insert to the NbrMap here.
+	// TODO
+	// Add the neighbour to NbrMap.
 }
 
 func (conn_p *Connector) StoreHandler(env pkt.Envelope) {

@@ -1,0 +1,1 @@
+1. Add the neighbor which sends PingReq to NbrMap in connector/readloop.go.
