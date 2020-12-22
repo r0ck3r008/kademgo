@@ -3,52 +3,29 @@ package connector
 import (
 	"encoding/json"
 	"fmt"
-	"net"
 	"os"
 	sync "sync"
 
 	"github.com/r0ck3r008/kademgo/pkt"
 )
 
-// readLoop structure is the handler that node has and uses to asynchronously
-// receive packets and process or cache.
-type readloop struct {
-	rch    chan pkt.Envelope
-	sch    chan<- pkt.Envelope
-	pcache *map[int64]pkt.Envelope
-	mut    *sync.RWMutex
-}
-
-// init initiates the internal members of the ReadLoop type.
-func (rdl_p *readloop) init(mut *sync.RWMutex, pcache *map[int64]pkt.Envelope, sch chan<- pkt.Envelope) {
-	rdl_p.rch = make(chan pkt.Envelope, 100)
-	rdl_p.sch = sch
-	rdl_p.mut = mut
-	rdl_p.pcache = pcache
-}
-
-// deinit closes the receive channel and makes the Collector exit.
-func (rdl_p *readloop) deinit() {
-	close(rdl_p.rch)
-}
-
 // Collector is intended to be a goroutine that process the received packets in form of Envelope
 // struct and caches it in the connector cache based on the identifier.
-func (rdl_p *readloop) collector() {
+func (conn_p *Connector) collector() {
 	wg := sync.WaitGroup{}
-	for env := range rdl_p.rch {
+	for env := range conn_p.rch {
 		switch env.Pkt.Type {
 		case pkt.PingReq:
 			wg.Add(1)
-			go func() { rdl_p.PingRes(env); wg.Done() }()
+			go func() { conn_p.PingRes(env); wg.Done() }()
 		case pkt.Store:
 			wg.Add(1)
-			go func() { rdl_p.StoreHandler(env); wg.Done() }()
+			go func() { conn_p.StoreHandler(env); wg.Done() }()
 		default:
 			// Acquire write lock and write to cache
-			rdl_p.mut.Lock()
-			(*rdl_p.pcache)[env.Pkt.RandNum] = env
-			rdl_p.mut.Unlock()
+			conn_p.rwlock.Lock()
+			conn_p.pcache[env.Pkt.RandNum] = env
+			conn_p.rwlock.Unlock()
 		}
 	}
 	wg.Wait()
@@ -56,10 +33,10 @@ func (rdl_p *readloop) collector() {
 
 // ReadLoop is supposed to be run as a go routine which can read all the messages comming in
 // to the node and send those along, if the TTL has not expired, to the Collector.
-func (rdl_p *readloop) readloop(conn_p *net.UDPConn) {
+func (conn_p *Connector) readloop() {
 	for {
 		var cmdr []byte
-		_, addr_p, err := conn_p.ReadFromUDP(cmdr)
+		_, addr_p, err := conn_p.conn.ReadFromUDP(cmdr)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error in reading: %s\n", err)
 			break
@@ -71,20 +48,20 @@ func (rdl_p *readloop) readloop(conn_p *net.UDPConn) {
 			os.Exit(1)
 		}
 		var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: *addr_p}
-		// BUG: This might make the application panic if DeInit on ReadLoop is called while
+		// BUG: This might make the application panic if DeInit on Connector is called while
 		// receive channel is being written to with a new packet.
-		rdl_p.rch <- env
+		conn_p.rch <- env
 	}
 }
 
 // PingRes is the handler of the Ping Request that node receives.
-func (rdl_p *readloop) PingRes(env pkt.Envelope) {
+func (conn_p *Connector) PingRes(env pkt.Envelope) {
 	env.Pkt.Type = pkt.PingRes
-	rdl_p.sch <- env
+	conn_p.sch <- env
 
 	// Insert to the NbrMap here.
 }
 
-func (rdl_p *readloop) StoreHandler(env pkt.Envelope) {
+func (conn_p *Connector) StoreHandler(env pkt.Envelope) {
 	// Insert to the ObjMap here
 }
