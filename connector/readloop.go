@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	sync "sync"
+	"sync"
 
 	"github.com/r0ck3r008/kademgo/pkt"
 )
@@ -57,12 +57,15 @@ func (conn_p *Connector) readloop() {
 // PingRes is the handler of the Ping Request that node receives.
 func (conn_p *Connector) PingRes(env pkt.Envelope) {
 	env.Pkt.Type = pkt.PingRes
+
+	// send to writeloop for sending it out
 	conn_p.sch <- env
 
-	// TODO
-	// Add the neighbour to NbrMap.
+	// send over to node for processing
+	conn_p.nchan <- env
 }
 
 func (conn_p *Connector) StoreHandler(env pkt.Envelope) {
-	// Insert to the ObjMap here
+	// Send to Node for further ObjMap related processing
+	conn_p.sch <- env
 }

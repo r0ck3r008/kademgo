@@ -2,8 +2,8 @@ package connector
 
 import (
 	"fmt"
-	"sync"
 	"net"
+	"sync"
 
 	"github.com/r0ck3r008/kademgo/pkt"
 	"github.com/r0ck3r008/kademgo/utils"
@@ -18,18 +18,21 @@ type Connector struct {
 	sch chan pkt.Envelope
 	// rch is the read channel within Connector
 	rch chan pkt.Envelope
+	// nchan is the channel on which messages to node can be sent
+	nchan chan<- pkt.Envelope
 	// wg is required to wait for rdl and wrl routines to finish
 	wg *sync.WaitGroup
 	// pcache is the map that stores retured packets for processing
 	pcache map[int64]pkt.Envelope
 }
 
-func (conn_p *Connector) Init(addr *string) error {
+func (conn_p *Connector) Init(addr *string, nchan chan<- pkt.Envelope) error {
 	conn_p.pcache = make(map[int64]pkt.Envelope)
 	conn_p.rwlock = &sync.RWMutex{}
 	conn_p.wg = &sync.WaitGroup{}
 	conn_p.sch = make(chan pkt.Envelope, 100)
 	conn_p.rch = make(chan pkt.Envelope, 100)
+	conn_p.nchan = nchan
 
 	var err error
 	conn_p.conn, err = net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: utils.PORTNUM, Zone: ""})
