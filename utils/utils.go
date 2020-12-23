@@ -26,11 +26,11 @@ func HashFile(fname *string) ([HASHSZ]byte, error) {
 
 // GetDist is the function that calculates the `distance' of the given node's
 // hash from the node which is caling it.
-func GetDist(hash1 *[HASHSZ]byte, hash2 *[HASHSZ]byte) int {
+func GetDist(hash1, hash2 *[HASHSZ]byte) int {
 	var max_pow int
 	// The indx is basically the log of 2^{i} as mentioned in the algorithm
 	// The algorithm states that each kbucket stores addresses with distance
-	// of 2_{i} < d < 2_{i+1} where 0 <= i < 160. This indx is that `i'
+	// of 2^{i} < d < 2^{i+1} where 0 <= i < 160. This indx is that `i'
 	for i := HASHSZ - 1; i >= 0; i-- {
 		if ((*hash1)[i] ^ (*hash2)[i]) == 1 {
 			max_pow = i
