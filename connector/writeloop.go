@@ -51,13 +51,5 @@ func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.IP) bool 
 	return ret
 }
 
-// Store is a shoot and forget type of a function. It works in best effort way.
-func (conn_p *Connector) Store(srchash *[utils.HASHSZ]byte, addr_p *net.IP, obj_p *pkt.ObjAddr) {
-	var rand_num int64 = int64(rand.Int())
-	obj := *obj_p
-	addr := net.UDPAddr{IP: *addr_p, Port: utils.PORTNUM, Zone: ""}
-	var packet pkt.Packet = pkt.Packet{RandNum: rand_num, Type: pkt.Store, Hash: *srchash, Obj: obj}
-	var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: addr}
-
-	conn_p.sch <- env
+func (conn_p *Connector) FindNode(srchash, dsthash *[utils.HASHSZ]byte) {
 }

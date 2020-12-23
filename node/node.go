@@ -64,9 +64,6 @@ func (node_p *Node) collector() {
 		case pkt.PingRes:
 			wg.Add(1)
 			go func() { node_p.nmap.Insert(node_p.hash, env.Pkt.Hash, env.Addr.IP, node_p.conn); wg.Done() }()
-		case pkt.Store:
-			wg.Add(1)
-			go func() { node_p.omap.Insert(node_p.hash, env.Pkt.Obj); wg.Done() }()
 		}
 	}
 	wg.Wait()

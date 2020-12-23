@@ -27,10 +27,6 @@ const (
 	// PingRes is the response to is-alive request.
 	PingRes
 
-	// Store is the type that defines a packet to contain
-	// an object that the node it supposed to store.
-	Store
-
 	// FindReq is the type that the sender sends as a request to
 	// return Nbrs that the receiver might know.
 	FindReq
