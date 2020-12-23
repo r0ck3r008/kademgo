@@ -50,8 +50,9 @@ func (nmap_p *NbrMap) Get(srchash, dsthash *[utils.HASHSZ]byte) (*pkt.ObjAddr, e
 
 // NodeLookup returns the `k' from the bucket closest to the destination, if number of nodes in the
 // bucket is lesser than `k', it then searches in buckets other than this until total return number is `k'.
-func (nmap_p *NbrMap) NodeLookup(srchash, dsthash *[utils.HASHSZ]byte, ret []pkt.ObjAddr, sz int) {
+func (nmap_p *NbrMap) NodeLookup(srchash, dsthash *[utils.HASHSZ]byte, ret []pkt.ObjAddr) {
 	var indx int = utils.GetDist(srchash, dsthash)
+	var sz int = utils.KVAL
 	if node_p, ok := nmap_p.bkt[indx]; ok && node_p.sz == utils.KVAL {
 		// A Deep copy of objects
 		for i := 0; i < sz; i++ {
@@ -61,17 +62,26 @@ func (nmap_p *NbrMap) NodeLookup(srchash, dsthash *[utils.HASHSZ]byte, ret []pkt
 		// Get neighbours from from earlier buckets since lesser index buckets are closer.
 		var i int = 0
 		var indx_tmp int = indx
+		for indx_tmp >= 0 && i < sz {
+			if node_p, ok := nmap_p.bkt[indx_tmp]; ok {
+				for j := 0; j < node_p.sz; j++ {
+					ret[i] = *(node_p.cvec[j])
+					i++
+				}
+			}
+			indx_tmp--
+		}
+		// If still not done, get nbrs from rest of the buckets
+		indx_tmp = indx + 1
 		for indx_tmp < utils.HASHSZ && i < sz {
 			if node_p, ok := nmap_p.bkt[indx_tmp]; ok {
 				for j := 0; j < node_p.sz; j++ {
 					ret[i] = *(node_p.cvec[j])
-					i--
+					i++
 				}
 			}
-			indx_tmp--
-			if indx_tmp == 0 {
-				indx_tmp = indx + 1
-			}
+			indx_tmp++
 		}
+
 	}
 }
