@@ -74,5 +74,9 @@ func (node_p *Node) collector() {
 
 // DeInit function waits for all the go routines registered to exit.
 func (node_p *Node) DeInit() {
+	// first closing the nchan on Node.collector helps make sure it exists before
+	// we call wait on it.
+	close(node_p.nchan)
+	node_p.wg.Wait()
 	node_p.conn.DeInit()
 }
