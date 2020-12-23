@@ -7,7 +7,6 @@ package objmap
 
 import (
 	"fmt"
-	"net"
 
 	"github.com/r0ck3r008/kademgo/pkt"
 	"github.com/r0ck3r008/kademgo/utils"
@@ -31,17 +30,17 @@ func (omap_p *ObjMap) Init() {
 }
 
 // Insert inserts the object accoring to its distance from the node.
-func (omap_p *ObjMap) Insert(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP) {
-	var indx int = utils.GetDist(srchash, dsthash)
+func (omap_p *ObjMap) Insert(srchash [utils.HASHSZ]byte, obj pkt.ObjAddr) {
+	var indx int = utils.GetDist(&srchash, &obj.Hash)
 	if node_p, ok := omap_p.omap[indx]; ok {
-		if _, ok := node_p.Nmap[*dsthash]; !ok {
-			node_p.Nmap[*dsthash] = len(node_p.Nvec)
-			node_p.Nvec = append(node_p.Nvec, &pkt.ObjAddr{Hash: *dsthash, Addr: *obj})
+		if _, ok := node_p.Nmap[obj.Hash]; !ok {
+			node_p.Nmap[obj.Hash] = len(node_p.Nvec)
+			node_p.Nvec = append(node_p.Nvec, &pkt.ObjAddr{Hash: obj.Hash, Addr: obj.Addr})
 		}
 	} else {
 		var node_p *ObjNode = &ObjNode{Nmap: make(map[[utils.HASHSZ]byte]int),
-			Nvec: []*pkt.ObjAddr{&pkt.ObjAddr{Hash: *dsthash, Addr: *obj}}}
-		node_p.Nmap[*dsthash] = 0
+			Nvec: []*pkt.ObjAddr{&pkt.ObjAddr{Hash: obj.Hash, Addr: obj.Addr}}}
+		node_p.Nmap[obj.Hash] = 0
 		omap_p.omap[indx] = node_p
 	}
 }
