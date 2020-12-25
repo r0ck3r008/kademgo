@@ -48,6 +48,9 @@ type Packet struct {
 	// Type is the type of packet from PktType.
 	Type PacketType `json:"Type"`
 
+	// THash is the hash of the target object/Nbr to lookup in FindNode/FindObj
+	THash [utils.HASHSZ]byte `json:"THash,omitempty"`
+
 	// Obj is the ObjNode type object that only Store PktType uses.
 	Obj ObjAddr `json:"Obj,omitempty"`
 
