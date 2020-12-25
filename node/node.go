@@ -63,7 +63,10 @@ func (node_p *Node) collector() {
 		switch env.Pkt.Type {
 		case pkt.PingRes:
 			wg.Add(1)
-			go func() { node_p.nmap.Insert(node_p.hash, env.Pkt.Hash, env.Addr.IP, node_p.conn); wg.Done() }()
+			go func() { node_p.PingReqHandler(env); wg.Done() }()
+		case pkt.FindReq:
+			wg.Add(1)
+			go func() { node_p.FindReqHandler(env); wg.Done() }()
 		}
 	}
 	wg.Wait()
