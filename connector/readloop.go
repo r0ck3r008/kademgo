@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"sync"
 
 	"github.com/r0ck3r008/kademgo/pkt"
 )
@@ -12,12 +11,12 @@ import (
 // Collector is intended to be a goroutine that process the received packets in form of Envelope
 // struct and caches it in the connector cache based on the identifier.
 func (conn_p *Connector) collector() {
-	wg := sync.WaitGroup{}
 	for env := range conn_p.rch {
 		switch env.Pkt.Type {
 		case pkt.PingReq:
-			wg.Add(1)
-			go func() { conn_p.PingRes(env); wg.Done() }()
+			conn_p.nchan <- env
+		case pkt.FindReq:
+			conn_p.nchan <- env
 		default:
 			// Acquire write lock and write to cache
 			conn_p.rwlock.Lock()
@@ -25,7 +24,6 @@ func (conn_p *Connector) collector() {
 			conn_p.rwlock.Unlock()
 		}
 	}
-	wg.Wait()
 }
 
 // ReadLoop is supposed to be run as a go routine which can read all the messages comming in
@@ -49,15 +47,4 @@ func (conn_p *Connector) readloop() {
 		// receive channel is being written to with a new packet.
 		conn_p.rch <- env
 	}
-}
-
-// PingRes is the handler of the Ping Request that node receives.
-func (conn_p *Connector) PingRes(env pkt.Envelope) {
-	env.Pkt.Type = pkt.PingRes
-
-	// send to writeloop for sending it out
-	conn_p.sch <- env
-
-	// send over to node for processing
-	conn_p.nchan <- env
 }
