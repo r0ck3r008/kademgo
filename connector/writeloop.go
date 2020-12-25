@@ -52,8 +52,31 @@ func (conn_p *Connector) PingReq(srchash *[utils.HASHSZ]byte, addr_p *net.IP) bo
 	return ret
 }
 
-func (conn_p *Connector) FindNode(srchash, dsthash *[utils.HASHSZ]byte) {
 func (conn_p *Connector) PingRes(env *pkt.Envelope) {
 	conn_p.sch <- *env
 }
+
+// FindNode is called by Node and expects ALPHAVAL number of nbrs to recursively
+// query for neighbours.
+func (conn_p *Connector) FindNodeReq(srchash, target *[utils.HASHSZ]byte, ret *[]pkt.ObjAddr) {
+	var rands []int64
+	for i := 0; i < utils.ALPHAVAL; i++ {
+		rands = append(rands, int64(rand.Int()))
+		addr := net.UDPAddr{IP: (*ret)[i].Addr, Port: utils.PORTNUM, Zone: ""}
+		var packet pkt.Packet = pkt.Packet{RandNum: rands[i], Hash: *srchash, Type: pkt.FindReq, THash: *target}
+		var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: addr}
+		conn_p.sch <- env
+	}
+	time.Sleep(utils.PINGWAIT)
+	// Continue RPC with received values
+}
+
+func (conn_p Connector) FindNodeRes(srchash *[utils.HASHSZ]byte, env *pkt.Envelope, ret *[]pkt.ObjAddr) {
+	var objarr [utils.KVAL]pkt.ObjAddr
+	copy(objarr[:], (*ret)[:])
+	var pkt pkt.Packet = pkt.Packet{RandNum: (*env).Pkt.RandNum, Hash: *srchash, Type: pkt.FindRes, ObjArr: objarr}
+
+	// Send out the reply
+	(*env).Pkt = pkt
+	conn_p.sch <- *env
 }
