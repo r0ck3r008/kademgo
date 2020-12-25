@@ -52,6 +52,8 @@ func (conn_p *Connector) PingReq(srchash *[utils.HASHSZ]byte, addr_p *net.IP) bo
 	return ret
 }
 
+// PingRes is responsible for writing the Ping Response to the network.
+// This is called by the Node.PingReqHandler.
 func (conn_p *Connector) PingRes(env *pkt.Envelope) {
 	conn_p.sch <- *env
 }
@@ -71,6 +73,7 @@ func (conn_p *Connector) FindNodeReq(srchash, target *[utils.HASHSZ]byte, ret *[
 	// Continue RPC with received values
 }
 
+// FindNodeRes is responsible for writing the KVAL Nbrs found by Node.FindReqHandler to the network.
 func (conn_p Connector) FindNodeRes(srchash *[utils.HASHSZ]byte, env *pkt.Envelope, ret *[]pkt.ObjAddr) {
 	var objarr [utils.KVAL]pkt.ObjAddr
 	copy(objarr[:], (*ret)[:])
