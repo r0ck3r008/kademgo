@@ -69,6 +69,17 @@ func (node_p *Node) collector() {
 	wg.Wait()
 }
 
+// FindNode is responsible for beginning the process of lookup by
+// calling the Connector's FindNode.
+func (node_p *Node) FindNode(target [utils.HASHSZ]byte) {
+	var ret []pkt.ObjAddr = make([]pkt.ObjAddr, utils.ALPHAVAL)
+	// Get First ALPHANUM Nbrs
+	node_p.nmap.NodeLookup(&node_p.hash, &target, &ret, utils.ALPHAVAL)
+
+	// Begin the Recursion.
+	node_p.conn.FindNodeReq(&node_p.hash, &target, &ret)
+}
+
 // DeInit function waits for all the go routines registered to exit.
 func (node_p *Node) DeInit() {
 	// first closing the nchan on Node.collector helps make sure it exists before
