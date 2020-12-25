@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/r0ck3r008/kademgo/connector"
 	"github.com/r0ck3r008/kademgo/pkt"
 	"github.com/r0ck3r008/kademgo/utils"
-	"github.com/r0ck3r008/kademgo/connector"
 )
 
 // NbrNode serves as the LRU cache for the Neighbours and represents a particular
@@ -43,7 +43,7 @@ func (cache_p *NbrNode) put(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, c
 		// of cvec and cmap if ping of the least recently used fails
 		if cache_p.sz == utils.KVAL {
 			cache_p.cvec = cache_p.cvec[1:]
-			if conn_p.Ping(srchash, &old_p.Addr) {
+			if conn_p.PingReq(srchash, &old_p.Addr) {
 				// If ping succeedes, add the old one to the back
 				cache_p.cvec = append(cache_p.cvec, old_p)
 				return

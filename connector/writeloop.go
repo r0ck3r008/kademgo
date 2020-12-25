@@ -28,9 +28,10 @@ func (conn_p *Connector) writeloop() {
 	}
 }
 
-// Ping requests for a ping reply from the passed in UDP address and returns a bool return value if
+// PingReq requests for a ping reply from the passed in UDP address and returns a bool return value if
 // a reply shows up. It waits for utils.PINGWAIT amount of time before it fails.
-func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.IP) bool {
+// It is called by NbrMap while deciding whether to evict a least seen nbr from cache
+func (conn_p *Connector) PingReq(srchash *[utils.HASHSZ]byte, addr_p *net.IP) bool {
 	var rand_num int64 = int64(rand.Int())
 	addr := net.UDPAddr{IP: *addr_p, Port: utils.PORTNUM, Zone: ""}
 	var packet pkt.Packet = pkt.Packet{RandNum: rand_num, Hash: *srchash, Type: pkt.PingReq}
@@ -52,4 +53,7 @@ func (conn_p *Connector) Ping(srchash *[utils.HASHSZ]byte, addr_p *net.IP) bool 
 }
 
 func (conn_p *Connector) FindNode(srchash, dsthash *[utils.HASHSZ]byte) {
+func (conn_p *Connector) PingRes(env *pkt.Envelope) {
+	conn_p.sch <- *env
+}
 }
