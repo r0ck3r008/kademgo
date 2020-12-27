@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/r0ck3r008/kademgo/node"
+	"github.com/r0ck3r008/kademgo/utils"
 )
 
 // KademGo struct is the handle that the user consuming the library would have in order
@@ -16,11 +17,11 @@ type KademGo struct {
 }
 
 // Init initiates the internal structre, node of KademGo.
-func (kdm_p *KademGo) Init(addr_p *string) {
+func (kdm_p *KademGo) Init(addr_p *string, addr_hash *[utils.HASHSZ]byte) {
 	var bind_addr string = "127.0.0.1"
 
 	kdm_p.node = &node.Node{}
-	if err := kdm_p.node.Init(&bind_addr, addr_p); err != nil {
+	if err := kdm_p.node.Init(&bind_addr, addr_p, addr_hash); err != nil {
 		fmt.Fprintf(os.Stderr, "Error in initiating node: %s\n", err)
 		os.Exit(1)
 	}

@@ -7,6 +7,7 @@ package node
 
 import (
 	"math/rand"
+	"net"
 	"strconv"
 	"sync"
 
@@ -31,7 +32,7 @@ type Node struct {
 
 // Init is the function that initiates the ReaderLoop, WriterLoop, UDP listener
 // and as well as forms the random hash for the node.
-func (node_p *Node) Init(addr *string, gway_addr *string) error {
+func (node_p *Node) Init(addr *string, gway_addr *string, gway_hash *[utils.HASHSZ]byte) error {
 	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
 	node_p.hash = utils.HashStr([]byte(rnum_str))
 
@@ -51,6 +52,12 @@ func (node_p *Node) Init(addr *string, gway_addr *string) error {
 
 	node_p.wg.Add(1)
 	go func() { node_p.collector(); node_p.wg.Done() }()
+
+	// Insert the gateway node to NbrTable
+	var gway_ip net.IP = net.IP([]byte(*gway_addr))
+	node_p.nmap.Insert(&node_p.hash, gway_hash, &gway_ip, node_p.conn)
+	// Run a lookup on self
+	node_p.FindNode(node_p.hash)
 
 	return nil
 }
