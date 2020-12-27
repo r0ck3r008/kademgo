@@ -87,7 +87,7 @@ func (node_p *Node) FindNode(target [utils.HASHSZ]byte) {
 	node_p.nmap.NodeLookup(&node_p.hash, &target, &ret, utils.ALPHAVAL)
 
 	// Begin the Recursion.
-	node_p.conn.FindNodeReq(&node_p.hash, &target, &ret)
+	_ = node_p.conn.FindNodeReq(&node_p.hash, &target, &ret)
 }
 
 // DeInit function waits for all the go routines registered to exit.

@@ -60,17 +60,53 @@ func (conn_p *Connector) PingRes(env *pkt.Envelope) {
 
 // FindNode is called by Node and expects ALPHAVAL number of nbrs to recursively
 // query for neighbours.
-func (conn_p *Connector) FindNodeReq(srchash, target *[utils.HASHSZ]byte, ret *[]pkt.ObjAddr) {
-	var rands []int64
-	for i := 0; i < utils.ALPHAVAL; i++ {
-		rands = append(rands, int64(rand.Int()))
-		addr := net.UDPAddr{IP: (*ret)[i].Addr, Port: utils.PORTNUM, Zone: ""}
-		var packet pkt.Packet = pkt.Packet{RandNum: rands[i], Hash: *srchash, Type: pkt.FindReq, THash: *target}
-		var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: addr}
-		conn_p.sch <- env
+func (conn_p *Connector) FindNodeReq(srchash, target *[utils.HASHSZ]byte, list *[]pkt.ObjAddr) pkt.ObjAddr {
+	var ret pkt.ObjAddr
+	var flag bool = false
+	var oaddrs_list []*[]pkt.ObjAddr = []*[]pkt.ObjAddr{list}
+	oaddr_blist := make(map[[utils.HASHSZ]byte]bool)
+	for len(oaddrs_list) != 0 || !flag {
+		var count int = 0
+		var indx int = len(oaddrs_list)
+		var rands []int64
+		for _, oaddr := range *(oaddrs_list[indx]) {
+			if oaddr.Hash == *target {
+				ret = oaddr
+				flag = true
+				break
+			} else if count == utils.ALPHAVAL {
+				break
+			}
+			if _, ok := oaddr_blist[oaddr.Hash]; !ok {
+				rands = append(rands, int64(rand.Int()))
+				addr := net.UDPAddr{IP: oaddr.Addr, Port: utils.PORTNUM, Zone: ""}
+				var packet pkt.Packet = pkt.Packet{RandNum: rands[len(rands)-1], Hash: *srchash, Type: pkt.FindReq, THash: *target}
+				var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: addr}
+				conn_p.sch <- env
+
+				oaddr_blist[oaddr.Hash] = true
+				count++
+			}
+		}
+		oaddrs_list = oaddrs_list[:indx-1]
+
+		if !flag {
+			time.Sleep(utils.PINGWAIT)
+			for _, rand := range rands {
+				conn_p.rwlock.RLock()
+				if _, ok := conn_p.pcache[rand]; ok {
+					var list_new [utils.KVAL]pkt.ObjAddr = conn_p.pcache[rand].Pkt.ObjArr
+					var slice_new []pkt.ObjAddr = list_new[:]
+					conn_p.rwlock.Lock()
+					delete(conn_p.pcache, rand)
+					conn_p.rwlock.Unlock()
+					oaddrs_list = append(oaddrs_list, &slice_new)
+				}
+				conn_p.rwlock.RUnlock()
+			}
+		}
 	}
-	time.Sleep(utils.PINGWAIT)
-	// Continue RPC with received values
+	return ret
 }
 
 // FindNodeRes is responsible for writing the KVAL Nbrs found by Node.FindReqHandler to the network.
