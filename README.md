@@ -12,6 +12,11 @@ In the project root run,
 ```bash
 $> go get github.com/r0ck3r008/kademgo
 ```
+or, to get the conainer image,
+```bash
+$> podman pull ghcr.io/r0ck3r008/kademgo:latest # using podman (recommended)
+$> docker pull ghcr.io/r0ck3r008/kademgo:latest # Using docker
+```
 Then use,
 ```go
 import "github.com/r0ck3r008/kademgo"
