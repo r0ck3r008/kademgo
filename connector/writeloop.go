@@ -67,7 +67,7 @@ func (conn_p *Connector) FindNodeReq(srchash, target *[utils.HASHSZ]byte, list *
 	oaddr_blist := make(map[[utils.HASHSZ]byte]bool)
 	for len(oaddrs_list) != 0 || !flag {
 		var count int = 0
-		var indx int = len(oaddrs_list)
+		var indx int = len(oaddrs_list) - 1
 		var rands []int64
 		for _, oaddr := range *(oaddrs_list[indx]) {
 			if oaddr.Hash == *target {
