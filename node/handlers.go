@@ -14,7 +14,7 @@ func (node_p *Node) PingReqHandler(env pkt.Envelope) {
 	node_p.conn.PingRes(&env)
 
 	// Potentially update in NbrMap
-	node_p.nmap.Insert(node_p.hash, env.Pkt.Hash, env.Addr.IP, node_p.conn)
+	node_p.nmap.Insert(&node_p.hash, &env.Pkt.Hash, &env.Addr.IP, node_p.conn)
 }
 
 // FindReqHandler is responsible for finding KVAL Nbrs from NbrMap and calling
