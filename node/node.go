@@ -6,8 +6,11 @@
 package node
 
 import (
+	"encoding/hex"
+	"fmt"
 	"math/rand"
 	"net"
+	"os"
 	"strconv"
 	"sync"
 
@@ -60,6 +63,8 @@ func (node_p *Node) Init(addr *string, gway_addr *string, gway_hash *[utils.HASH
 		// Run a lookup on self
 		node_p.FindNode(node_p.hash)
 	}
+
+	fmt.Fprintf(os.Stdout, "[!] Node successfully initiated with hash: \n%s\n", hex.EncodeToString(node_p.hash[:]))
 
 	return nil
 }
