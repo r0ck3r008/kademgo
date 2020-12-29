@@ -37,7 +37,7 @@ func (conn_p *Connector) PingReq(srchash *[utils.HASHSZ]byte, addr_p *net.IP) bo
 	var packet pkt.Packet = pkt.Packet{RandNum: rand_num, Hash: *srchash, Type: pkt.PingReq}
 	var env pkt.Envelope = pkt.Envelope{Pkt: packet, Addr: addr}
 	conn_p.sch <- env
-	time.Sleep(utils.PINGWAIT)
+	time.Sleep(utils.TIMEOUT)
 	// Fetch result from map
 	var ret bool = false
 	conn_p.rwlock.RLock()
@@ -91,7 +91,7 @@ func (conn_p *Connector) FindNodeReq(srchash, target *[utils.HASHSZ]byte, list *
 		oaddrs_list = oaddrs_list[:indx-1]
 
 		if !flag {
-			time.Sleep(utils.PINGWAIT)
+			time.Sleep(utils.TIMEOUT)
 			for _, rand := range rands {
 				conn_p.rwlock.RLock()
 				if _, ok := conn_p.pcache[rand]; ok {

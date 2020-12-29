@@ -20,7 +20,7 @@ const (
 	// PORTNUM defines the standard port that would be used for this application.
 	PORTNUM = 12345
 
-	// PINGWAIT is the amounf of time the Ping call would wait before it fails and decides
+	// TIMEOUT is the amounf of time the Ping call would wait before it fails and decides
 	// to evict the neighbour in question.
-	PINGWAIT = 500 * time.Millisecond
+	TIMEOUT = 500 * time.Millisecond
 )
