@@ -53,11 +53,13 @@ func (node_p *Node) Init(addr *string, gway_addr *string, gway_hash *[utils.HASH
 	node_p.wg.Add(1)
 	go func() { node_p.collector(); node_p.wg.Done() }()
 
-	// Insert the gateway node to NbrTable
-	var gway_ip net.IP = net.IP([]byte(*gway_addr))
-	node_p.nmap.Insert(&node_p.hash, gway_hash, &gway_ip, node_p.conn)
-	// Run a lookup on self
-	node_p.FindNode(node_p.hash)
+	if gway_addr != nil && gway_hash != nil {
+		// Insert the gateway node to NbrTable
+		var gway_ip net.IP = net.IP([]byte(*gway_addr))
+		node_p.nmap.Insert(&node_p.hash, gway_hash, &gway_ip, node_p.conn)
+		// Run a lookup on self
+		node_p.FindNode(node_p.hash)
+	}
 
 	return nil
 }
