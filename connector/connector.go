@@ -26,7 +26,7 @@ type Connector struct {
 	pcache map[int64]pkt.Envelope
 }
 
-func (conn_p *Connector) Init(addr *string, nchan chan<- pkt.Envelope) error {
+func (conn_p *Connector) Init(nchan chan<- pkt.Envelope) error {
 	conn_p.pcache = make(map[int64]pkt.Envelope)
 	conn_p.rwlock = &sync.RWMutex{}
 	conn_p.wg = &sync.WaitGroup{}
@@ -35,7 +35,11 @@ func (conn_p *Connector) Init(addr *string, nchan chan<- pkt.Envelope) error {
 	conn_p.nchan = nchan
 
 	var err error
-	conn_p.conn, err = net.ListenUDP("conn", &net.UDPAddr{IP: []byte(*addr), Port: utils.PORTNUM, Zone: ""})
+	srvaddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", utils.PORTNUM))
+	if err != nil {
+		return fmt.Errorf("UDP Create: %s", err)
+	}
+	conn_p.conn, err = net.ListenUDP("udp", srvaddr)
 	if err != nil {
 		return fmt.Errorf("UDP Create: %s", err)
 	}

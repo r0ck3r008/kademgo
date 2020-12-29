@@ -46,7 +46,7 @@ func (node_p *Node) Init(addr *string, gway_addr *string, gway_hash *[utils.HASH
 	node_p.nmap.Init()
 
 	node_p.conn = &connector.Connector{}
-	if err := node_p.conn.Init(addr, node_p.nchan); err != nil {
+	if err := node_p.conn.Init(node_p.nchan); err != nil {
 		return err
 	}
 
