@@ -21,7 +21,7 @@ type Connector struct {
 	// nchan is the channel on which messages to node can be sent
 	nchan chan<- pkt.Envelope
 	// endchan makes the readloop exit during Connector.DeInit
-	endchan chan bool
+	endchan chan struct{}
 	// wg is required to wait for rdl and wrl routines to finish
 	wg *sync.WaitGroup
 	// pcache is the map that stores retured packets for processing
@@ -34,7 +34,7 @@ func (conn_p *Connector) Init(nchan chan<- pkt.Envelope) error {
 	conn_p.wg = &sync.WaitGroup{}
 	conn_p.sch = make(chan pkt.Envelope, 100)
 	conn_p.rch = make(chan pkt.Envelope, 100)
-	conn_p.endchan = make(chan bool)
+	conn_p.endchan = make(chan struct{})
 	conn_p.nchan = nchan
 
 	var err error
