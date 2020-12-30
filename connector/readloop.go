@@ -47,10 +47,9 @@ func (conn_p *Connector) readloop() {
 			var cmdr []byte
 			_, addr_p, err := conn_p.conn.ReadFromUDP(cmdr)
 			if err != nil {
-				if errors.Is(err, os.ErrDeadlineExceeded) {
-					continue
+				if !errors.Is(err, os.ErrDeadlineExceeded) {
+					fmt.Fprintf(os.Stderr, "Error in reading: %s\n", err)
 				}
-				fmt.Fprintf(os.Stderr, "Error in reading: %s\n", err)
 				break
 			}
 
