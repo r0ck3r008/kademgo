@@ -77,10 +77,10 @@ func (node_p *Node) collector() {
 		switch env.Pkt.Type {
 		case pkt.PingRes:
 			wg.Add(1)
-			go func() { node_p.PingReqHandler(env); wg.Done() }()
+			go func(env pkt.Envelope) { node_p.PingReqHandler(env); wg.Done() }(env)
 		case pkt.FindReq:
 			wg.Add(1)
-			go func() { node_p.FindReqHandler(env); wg.Done() }()
+			go func(env pkt.Envelope) { node_p.FindReqHandler(env); wg.Done() }(env)
 		}
 	}
 	wg.Wait()
