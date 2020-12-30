@@ -32,10 +32,11 @@ func (conn_p *Connector) collector() {
 // ReadLoop is supposed to be run as a go routine which can read all the messages comming in
 // to the node and send those along, if the TTL has not expired, to the Collector.
 func (conn_p *Connector) readloop() {
-	for {
+	var flag bool = true
+	for flag {
 		select {
 		case <-conn_p.endchan:
-			break
+			flag = false
 		default:
 			// Set timeout on read
 			if err := conn_p.conn.SetReadDeadline(time.Now().Add(10 * utils.TIMEOUT)); err != nil {
