@@ -7,5 +7,5 @@ import (
 func main() {
 	var node *kademgo.KademGo = &kademgo.KademGo{}
 	node.Init(nil, nil)
-	defer node.DeInit()
+	node.DeInit()
 }
