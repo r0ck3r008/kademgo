@@ -46,10 +46,12 @@ func (conn_p *Connector) readloop() {
 			var cmdr []byte
 			_, addr_p, err := conn_p.conn.ReadFromUDP(cmdr)
 			if err != nil {
-				if !errors.Is(err, os.ErrDeadlineExceeded) {
+				if errors.Is(err, os.ErrDeadlineExceeded) {
+					break
+				} else {
 					fmt.Fprintf(os.Stderr, "Error in reading: %s\n", err)
+					os.Exit(1)
 				}
-				break
 			}
 
 			// Unmarshall into packet
