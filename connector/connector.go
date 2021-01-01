@@ -40,7 +40,7 @@ func (conn_p *Connector) Init(nchan chan<- pkt.Envelope) error {
 	var err error
 	srvaddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", utils.PORTNUM))
 	if err != nil {
-		return fmt.Errorf("UDP Create: %s", err)
+		return fmt.Errorf("UDP Resolve: %s", err)
 	}
 	conn_p.conn, err = net.ListenUDP("udp", srvaddr)
 	if err != nil {
