@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"crypto/sha512"
+	"crypto/sha1"
 	"time"
 )
 
@@ -15,7 +15,7 @@ const (
 	ALPHAVAL = 3
 
 	// HASHSZ defines the bytes needed to store the hash in binary, non encoded format.
-	HASHSZ = sha512.Size
+	HASHSZ = sha1.Size
 
 	// PORTNUM defines the standard port that would be used for this application.
 	PORTNUM = 12345

@@ -3,13 +3,13 @@
 package utils
 
 import (
-	"crypto/sha512"
+	"crypto/sha1"
 	"io/ioutil"
 )
 
 // HashStr hashes the given string to SHA512 and returns the digest.
 func HashStr(data []byte) [HASHSZ]byte {
-	hash := sha512.Sum512(data)
+	hash := sha1.Sum(data)
 
 	return hash
 }
