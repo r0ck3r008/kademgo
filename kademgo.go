@@ -4,7 +4,9 @@ package kademgo
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"time"
 
 	"github.com/r0ck3r008/kademgo/node"
 	"github.com/r0ck3r008/kademgo/utils"
@@ -19,6 +21,9 @@ type KademGo struct {
 // Init initiates the internal structre, node of KademGo.
 func (kdm_p *KademGo) Init(addr_p *string, addr_hash *[utils.HASHSZ]byte) {
 	var bind_addr string = "127.0.0.1"
+
+	// Seed the random number generator
+	rand.Seed(time.Now().UnixNano())
 
 	kdm_p.node = &node.Node{}
 	if err := kdm_p.node.Init(&bind_addr, addr_p, addr_hash); err != nil {
