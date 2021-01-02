@@ -20,13 +20,11 @@ type KademGo struct {
 
 // Init initiates the internal structre, node of KademGo.
 func (kdm_p *KademGo) Init(addr_p *string, addr_hash *[utils.HASHSZ]byte) {
-	var bind_addr string = "127.0.0.1"
-
 	// Seed the random number generator
 	rand.Seed(time.Now().UnixNano())
 
 	kdm_p.node = &node.Node{}
-	if err := kdm_p.node.Init(&bind_addr, addr_p, addr_hash); err != nil {
+	if err := kdm_p.node.Init(addr_p, addr_hash); err != nil {
 		fmt.Fprintf(os.Stderr, "Error in initiating node: %s\n", err)
 		os.Exit(1)
 	}

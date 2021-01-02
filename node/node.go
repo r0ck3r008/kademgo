@@ -35,7 +35,7 @@ type Node struct {
 
 // Init is the function that initiates the ReaderLoop, WriterLoop, UDP listener
 // and as well as forms the random hash for the node.
-func (node_p *Node) Init(addr *string, gway_addr *string, gway_hash *[utils.HASHSZ]byte) error {
+func (node_p *Node) Init(gway_addr *string, gway_hash *[utils.HASHSZ]byte) error {
 	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
 	node_p.hash = utils.HashStr([]byte(rnum_str))
 
