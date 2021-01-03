@@ -36,8 +36,8 @@ godoc
 Then in your browser, visit <http://localhost:6060/pkg/github.com/r0ck3r008/kademgo>.
 
 #### Contributing
-This project aims to follow all the general guidelines mentioned in official go documentation in [Effective Go](https://golang.org/doc/effective_go.html).
-This is project currently under development and is open for all contributions.
+The project aims to follow all the general guidelines mentioned in official go documentation in [Effective Go](https://golang.org/doc/effective_go.html).
+This project is currently under development and is open for all contributions.
 
 #### Future Trajectory
 The future trajectory of this project is to make a _Command and Control_ framework for a botnet inspired by _Starnberger et. al_ in the paper __Overbot: a botnet protocol based on Kademlia__.
