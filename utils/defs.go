@@ -20,6 +20,9 @@ const (
 	// PORTNUM defines the standard port that would be used for this application.
 	PORTNUM = 12345
 
+	// GRPCPORTNUM is the port on which the gRPC server listens
+	GRPCPORTNUM = 12346
+
 	// TIMEOUT is the amounf of time the Ping call would wait before it fails and decides
 	// to evict the neighbour in question.
 	TIMEOUT = 500 * time.Millisecond
