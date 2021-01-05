@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = ".;protos";
+
+package protos;
+
+service kademgo {
+    rpc GetHash (Request) returns (Response);
+}
+
+message Request {
+}
+
+message Response {
+    bytes Hash = 2;
+}

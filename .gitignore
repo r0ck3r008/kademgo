@@ -6,3 +6,4 @@ tmp/*
 !tmp/.gitkeep
 go.sum
 connector/packets.pb.go
+*.pb.go
