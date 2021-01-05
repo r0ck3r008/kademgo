@@ -69,6 +69,11 @@ func (node_p *Node) Init(gway_addr *string, gway_hash *[utils.HASHSZ]byte) error
 	return nil
 }
 
+// GetHash copies the hash of the node to provided buffer
+func (node_p *Node) GetHash(buf *[utils.HASHSZ]byte) {
+	*buf = node_p.hash
+}
+
 // collector in Node collects all the packets from the readloop which require the
 // involvement of NbrMap or ObjMap and appropriately processes them.
 func (node_p *Node) collector() {
