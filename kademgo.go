@@ -3,13 +3,16 @@
 package kademgo
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"os"
 	"time"
 
 	"github.com/r0ck3r008/kademgo/node"
+	"github.com/r0ck3r008/kademgo/protos"
 	"github.com/r0ck3r008/kademgo/utils"
+	"google.golang.org/grpc"
 )
 
 // KademGo struct is the handle that the user consuming the library would have in order
@@ -28,6 +31,14 @@ func (kdm_p *KademGo) Init(addr_p *string, addr_hash *[utils.HASHSZ]byte) {
 		fmt.Fprintf(os.Stderr, "Error in initiating node: %s\n", err)
 		os.Exit(1)
 	}
+// GetHash RPC call is to get the hash from the node
+func (kdm_p *KademGo) GetHash(ctx context.Context, req *protos.Request) (*protos.Response, error) {
+	var buf [utils.HASHSZ]byte
+	kdm_p.node.GetHash(&buf)
+	var ret *protos.Response = &protos.Response{}
+	ret.Hash = buf[:]
+
+	return ret, nil
 }
 
 // DeInit calls DeInit on the internal node.
