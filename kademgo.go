@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"net"
 	"os"
 	"time"
 
@@ -31,6 +32,20 @@ func (kdm_p *KademGo) Init(addr_p *string, addr_hash *[utils.HASHSZ]byte) {
 		fmt.Fprintf(os.Stderr, "Error in initiating node: %s\n", err)
 		os.Exit(1)
 	}
+
+	gs := grpc.NewServer()
+	protos.RegisterKademgoServer(gs, kdm_p)
+	// create a TCP socket for inbound server connections
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", utils.GRPCPORTNUM))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Kademgo: Listener: %s\n", err)
+		os.Exit(1)
+	}
+
+	// listen for requests
+	gs.Serve(l)
+}
+
 // GetHash RPC call is to get the hash from the node
 func (kdm_p *KademGo) GetHash(ctx context.Context, req *protos.Request) (*protos.Response, error) {
 	var buf [utils.HASHSZ]byte
