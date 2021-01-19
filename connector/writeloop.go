@@ -58,7 +58,7 @@ func (connP *Connector) PingRes(env *pkt.Envelope) {
 	connP.sch <- *env
 }
 
-// FindNode is called by Node and expects ALPHAVAL number of nbrs to recursively
+// FindNodeReq is called by Node and expects ALPHAVAL number of nbrs to recursively
 // query for neighbours.
 func (connP *Connector) FindNodeReq(srchash, target *[utils.HASHSZ]byte, list *[]pkt.ObjAddr) pkt.ObjAddr {
 	var ret pkt.ObjAddr

@@ -9,6 +9,8 @@ import (
 	"github.com/r0ck3r008/kademgo/utils"
 )
 
+// Connector is the object that holds async read/write loop
+// routines along with required mutexes.
 type Connector struct {
 	// conn is the actual UDP listening port
 	conn *net.UDPConn
@@ -28,6 +30,7 @@ type Connector struct {
 	pcache map[int64]pkt.Envelope
 }
 
+// Init initializes the Connector object
 func (connP *Connector) Init(nchan chan<- pkt.Envelope) error {
 	connP.pcache = make(map[int64]pkt.Envelope)
 	connP.rwlock = &sync.RWMutex{}
@@ -55,6 +58,7 @@ func (connP *Connector) Init(nchan chan<- pkt.Envelope) error {
 	return nil
 }
 
+// DeInit function de-initializes the Connector object.
 func (connP *Connector) DeInit() {
 	close(connP.sch)
 	connP.endchan <- true
