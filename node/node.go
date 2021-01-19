@@ -1,4 +1,4 @@
-// node package is responsible for:
+// Package node is responsible for:
 // 1. Creating a hash for itself
 // 2. Creating a UDPConn on the given bind address.
 // 3. Instantiating Reader and WriterLoop objects.
@@ -35,57 +35,57 @@ type Node struct {
 
 // Init is the function that initiates the ReaderLoop, WriterLoop, UDP listener
 // and as well as forms the random hash for the node.
-func (node_p *Node) Init(gway_addr *string, gway_hash *[utils.HASHSZ]byte) error {
-	var rnum_str string = strconv.FormatInt(int64(rand.Int()), 10)
-	node_p.hash = utils.HashStr([]byte(rnum_str))
+func (nodeP *Node) Init(gwayAddr *string, gwayHash *[utils.HASHSZ]byte) error {
+	var rnumStr string = strconv.FormatInt(int64(rand.Int()), 10)
+	nodeP.hash = utils.HashStr([]byte(rnumStr))
 
-	node_p.omap = &objmap.ObjMap{}
-	node_p.nmap = &nbrmap.NbrMap{}
+	nodeP.omap = &objmap.ObjMap{}
+	nodeP.nmap = &nbrmap.NbrMap{}
 
-	node_p.omap.Init()
-	node_p.nmap.Init()
+	nodeP.omap.Init()
+	nodeP.nmap.Init()
 
-	node_p.conn = &connector.Connector{}
-	if err := node_p.conn.Init(node_p.nchan); err != nil {
+	nodeP.conn = &connector.Connector{}
+	if err := nodeP.conn.Init(nodeP.nchan); err != nil {
 		return err
 	}
 
-	node_p.nchan = make(chan pkt.Envelope)
-	node_p.wg = &sync.WaitGroup{}
+	nodeP.nchan = make(chan pkt.Envelope)
+	nodeP.wg = &sync.WaitGroup{}
 
-	node_p.wg.Add(1)
-	go func() { node_p.collector(); node_p.wg.Done() }()
+	nodeP.wg.Add(1)
+	go func() { nodeP.collector(); nodeP.wg.Done() }()
 
-	if gway_addr != nil && gway_hash != nil {
+	if gwayAddr != nil && gwayHash != nil {
 		// Insert the gateway node to NbrTable
-		var gway_ip net.IP = net.IP([]byte(*gway_addr))
-		node_p.nmap.Insert(&node_p.hash, gway_hash, &gway_ip, node_p.conn)
+		var gwayIP net.IP = net.IP([]byte(*gwayAddr))
+		nodeP.nmap.Insert(&nodeP.hash, gwayHash, &gwayIP, nodeP.conn)
 		// Run a lookup on self
-		node_p.FindNode(node_p.hash)
+		nodeP.FindNode(nodeP.hash)
 	}
 
-	fmt.Fprintf(os.Stdout, "[!] Node successfully initiated with hash: \n%s\n", hex.EncodeToString(node_p.hash[:]))
+	fmt.Fprintf(os.Stdout, "[!] Node successfully initiated with hash: \n%s\n", hex.EncodeToString(nodeP.hash[:]))
 
 	return nil
 }
 
 // GetHash copies the hash of the node to provided buffer
-func (node_p *Node) GetHash(buf *[utils.HASHSZ]byte) {
-	*buf = node_p.hash
+func (nodeP *Node) GetHash(buf *[utils.HASHSZ]byte) {
+	*buf = nodeP.hash
 }
 
 // collector in Node collects all the packets from the readloop which require the
 // involvement of NbrMap or ObjMap and appropriately processes them.
-func (node_p *Node) collector() {
+func (nodeP *Node) collector() {
 	wg := sync.WaitGroup{}
-	for env := range node_p.nchan {
+	for env := range nodeP.nchan {
 		switch env.Pkt.Type {
 		case pkt.PingRes:
 			wg.Add(1)
-			go func(env pkt.Envelope) { node_p.PingReqHandler(env); wg.Done() }(env)
+			go func(env pkt.Envelope) { nodeP.PingReqHandler(env); wg.Done() }(env)
 		case pkt.FindReq:
 			wg.Add(1)
-			go func(env pkt.Envelope) { node_p.FindReqHandler(env); wg.Done() }(env)
+			go func(env pkt.Envelope) { nodeP.FindReqHandler(env); wg.Done() }(env)
 		}
 	}
 	wg.Wait()
@@ -93,20 +93,20 @@ func (node_p *Node) collector() {
 
 // FindNode is responsible for beginning the process of lookup by
 // calling the Connector's FindNode.
-func (node_p *Node) FindNode(target [utils.HASHSZ]byte) {
+func (nodeP *Node) FindNode(target [utils.HASHSZ]byte) {
 	var ret []pkt.ObjAddr = make([]pkt.ObjAddr, utils.ALPHAVAL)
 	// Get First ALPHANUM Nbrs
-	node_p.nmap.NodeLookup(&node_p.hash, &target, &ret, utils.ALPHAVAL)
+	nodeP.nmap.NodeLookup(&nodeP.hash, &target, &ret, utils.ALPHAVAL)
 
 	// Begin the Recursion.
-	_ = node_p.conn.FindNodeReq(&node_p.hash, &target, &ret)
+	_ = nodeP.conn.FindNodeReq(&nodeP.hash, &target, &ret)
 }
 
 // DeInit function waits for all the go routines registered to exit.
-func (node_p *Node) DeInit() {
+func (nodeP *Node) DeInit() {
 	// first closing the nchan on Node.collector helps make sure it exists before
 	// we call wait on it.
-	close(node_p.nchan)
-	node_p.wg.Wait()
-	node_p.conn.DeInit()
+	close(nodeP.nchan)
+	nodeP.wg.Wait()
+	nodeP.conn.DeInit()
 }

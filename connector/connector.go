@@ -28,37 +28,37 @@ type Connector struct {
 	pcache map[int64]pkt.Envelope
 }
 
-func (conn_p *Connector) Init(nchan chan<- pkt.Envelope) error {
-	conn_p.pcache = make(map[int64]pkt.Envelope)
-	conn_p.rwlock = &sync.RWMutex{}
-	conn_p.wg = &sync.WaitGroup{}
-	conn_p.sch = make(chan pkt.Envelope, 100)
-	conn_p.rch = make(chan pkt.Envelope, 100)
-	conn_p.endchan = make(chan bool)
-	conn_p.nchan = nchan
+func (connP *Connector) Init(nchan chan<- pkt.Envelope) error {
+	connP.pcache = make(map[int64]pkt.Envelope)
+	connP.rwlock = &sync.RWMutex{}
+	connP.wg = &sync.WaitGroup{}
+	connP.sch = make(chan pkt.Envelope, 100)
+	connP.rch = make(chan pkt.Envelope, 100)
+	connP.endchan = make(chan bool)
+	connP.nchan = nchan
 
 	var err error
 	srvaddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", utils.PORTNUM))
 	if err != nil {
 		return fmt.Errorf("UDP Resolve: %s", err)
 	}
-	conn_p.conn, err = net.ListenUDP("udp", srvaddr)
+	connP.conn, err = net.ListenUDP("udp", srvaddr)
 	if err != nil {
 		return fmt.Errorf("UDP Create: %s", err)
 	}
 
-	conn_p.wg.Add(3)
-	go func() { conn_p.readloop(); conn_p.wg.Done() }()
-	go func() { conn_p.writeloop(); conn_p.wg.Done() }()
-	go func() { conn_p.collector(); conn_p.wg.Done() }()
+	connP.wg.Add(3)
+	go func() { connP.readloop(); connP.wg.Done() }()
+	go func() { connP.writeloop(); connP.wg.Done() }()
+	go func() { connP.collector(); connP.wg.Done() }()
 
 	return nil
 }
 
-func (conn_p *Connector) DeInit() {
-	close(conn_p.sch)
-	conn_p.endchan <- true
-	close(conn_p.rch)
-	conn_p.wg.Wait()
-	conn_p.conn.Close()
+func (connP *Connector) DeInit() {
+	close(connP.sch)
+	connP.endchan <- true
+	close(connP.rch)
+	connP.wg.Wait()
+	connP.conn.Close()
 }

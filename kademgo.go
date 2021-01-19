@@ -1,4 +1,4 @@
-// kademgo implements Kademlia DHT Algorithm for P2P communication in a decentralized
+// Package kademgo implements Kademlia DHT Algorithm for P2P communication in a decentralized
 // yet reliable and efficient manner.
 package kademgo
 
@@ -24,18 +24,18 @@ type KademGo struct {
 }
 
 // Init initiates the internal structre, node of KademGo.
-func (kdm_p *KademGo) Init(addr_p *string, addr_hash *[utils.HASHSZ]byte) {
+func (kdmP *KademGo) Init(addrP *string, addrHash *[utils.HASHSZ]byte) {
 	// Seed the random number generator
 	rand.Seed(time.Now().UnixNano())
 
-	kdm_p.node = &node.Node{}
-	if err := kdm_p.node.Init(addr_p, addr_hash); err != nil {
+	kdmP.node = &node.Node{}
+	if err := kdmP.node.Init(addrP, addrHash); err != nil {
 		fmt.Fprintf(os.Stderr, "Error in initiating node: %s\n", err)
 		os.Exit(1)
 	}
 
-	kdm_p.gs = grpc.NewServer()
-	protos.RegisterKademgoServer(kdm_p.gs, kdm_p)
+	kdmP.gs = grpc.NewServer()
+	protos.RegisterKademgoServer(kdmP.gs, kdmP)
 	// create a TCP socket for inbound server connections
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", utils.GRPCPORTNUM))
 	if err != nil {
@@ -44,13 +44,13 @@ func (kdm_p *KademGo) Init(addr_p *string, addr_hash *[utils.HASHSZ]byte) {
 	}
 
 	// listen for requests
-	kdm_p.gs.Serve(l)
+	kdmP.gs.Serve(l)
 }
 
 // GetHash RPC call is to get the hash from the node
-func (kdm_p *KademGo) GetHash(ctx context.Context, req *protos.Request) (*protos.Response, error) {
+func (kdmP *KademGo) GetHash(ctx context.Context, req *protos.Request) (*protos.Response, error) {
 	var buf [utils.HASHSZ]byte
-	kdm_p.node.GetHash(&buf)
+	kdmP.node.GetHash(&buf)
 	var ret *protos.Response = &protos.Response{}
 	ret.Hash = buf[:]
 
@@ -58,7 +58,7 @@ func (kdm_p *KademGo) GetHash(ctx context.Context, req *protos.Request) (*protos
 }
 
 // DeInit calls DeInit on the internal node.
-func (kdm_p *KademGo) DeInit() {
-	kdm_p.gs.GracefulStop()
-	kdm_p.node.DeInit()
+func (kdmP *KademGo) DeInit() {
+	kdmP.gs.GracefulStop()
+	kdmP.node.DeInit()
 }

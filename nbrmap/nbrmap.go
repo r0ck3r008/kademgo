@@ -1,4 +1,4 @@
-// NbrMap package is responsible for,
+// Package nbrmap is responsible for,
 // 1. Inserting to and deleting from neighbour entries from k-buckets
 // 2. Calculating distances between itself and the provided neighbours
 // K-Buckets are implemented in the module lru.go
@@ -20,66 +20,66 @@ type NbrMap struct {
 }
 
 // Init is the initiator for the NbrMap and initiates the map of k-buckets.
-func (nmap_p *NbrMap) Init() {
-	nmap_p.bkt = make(map[int]*NbrNode)
+func (nmapP *NbrMap) Init() {
+	nmapP.bkt = make(map[int]*NbrNode)
 }
 
 // Insert is used to insert a new neighbour to its correct k-bucket in NeighbourMap.
 // This should be invoked as a go routine.
-func (nmap_p *NbrMap) Insert(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, conn_p *connector.Connector) {
+func (nmapP *NbrMap) Insert(srchash, dsthash *[utils.HASHSZ]byte, obj *net.IP, connP *connector.Connector) {
 	var indx int = utils.GetDist(srchash, dsthash)
-	nnode_p, ok := nmap_p.bkt[indx]
+	nnodeP, ok := nmapP.bkt[indx]
 	if !ok {
-		nmap_p.bkt[indx] = nbrnodeinit()
-		nnode_p = nmap_p.bkt[indx]
+		nmapP.bkt[indx] = nbrnodeinit()
+		nnodeP = nmapP.bkt[indx]
 	}
 
-	nnode_p.put(srchash, dsthash, obj, conn_p)
+	nnodeP.put(srchash, dsthash, obj, connP)
 
 }
 
 // Get is used to see if a neighbour exists in the NeighbourMap, returns error on failure.
-func (nmap_p *NbrMap) Get(srchash, dsthash *[utils.HASHSZ]byte) (*pkt.ObjAddr, error) {
+func (nmapP *NbrMap) Get(srchash, dsthash *[utils.HASHSZ]byte) (*pkt.ObjAddr, error) {
 	var indx int = utils.GetDist(srchash, dsthash)
-	if node_p, ok := nmap_p.bkt[indx]; ok {
-		return node_p.get(dsthash)
+	if nodeP, ok := nmapP.bkt[indx]; ok {
+		return nodeP.get(dsthash)
 	}
 
-	return nil, fmt.Errorf("Not Found!")
+	return nil, fmt.Errorf("not found")
 }
 
 // NodeLookup returns the `k' from the bucket closest to the destination, if number of nodes in the
 // bucket is lesser than `k', it then searches in buckets other than this until total return number is `k'.
-func (nmap_p *NbrMap) NodeLookup(srchash, dsthash *[utils.HASHSZ]byte, ret *[]pkt.ObjAddr, sz int) {
+func (nmapP *NbrMap) NodeLookup(srchash, dsthash *[utils.HASHSZ]byte, ret *[]pkt.ObjAddr, sz int) {
 	var indx int = utils.GetDist(srchash, dsthash)
-	if node_p, ok := nmap_p.bkt[indx]; ok && node_p.sz == utils.KVAL {
+	if nodeP, ok := nmapP.bkt[indx]; ok && nodeP.sz == utils.KVAL {
 		// A Deep copy of objects
 		for i := 0; i < sz; i++ {
-			(*ret)[i] = *(node_p.cvec[i])
+			(*ret)[i] = *(nodeP.cvec[i])
 		}
 	} else {
 		// Get neighbours from from earlier buckets since lesser index buckets are closer.
 		var i int = 0
-		var indx_tmp int = indx
-		for indx_tmp >= 0 && i < sz {
-			if node_p, ok := nmap_p.bkt[indx_tmp]; ok {
-				for j := 0; j < node_p.sz; j++ {
-					(*ret)[i] = *(node_p.cvec[j])
+		var indxTmp int = indx
+		for indxTmp >= 0 && i < sz {
+			if nodeP, ok := nmapP.bkt[indxTmp]; ok {
+				for j := 0; j < nodeP.sz; j++ {
+					(*ret)[i] = *(nodeP.cvec[j])
 					i++
 				}
 			}
-			indx_tmp--
+			indxTmp--
 		}
 		// If still not done, get nbrs from rest of the buckets
-		indx_tmp = indx + 1
-		for indx_tmp < utils.HASHSZ && i < sz {
-			if node_p, ok := nmap_p.bkt[indx_tmp]; ok {
-				for j := 0; j < node_p.sz; j++ {
-					(*ret)[i] = *(node_p.cvec[j])
+		indxTmp = indx + 1
+		for indxTmp < utils.HASHSZ && i < sz {
+			if nodeP, ok := nmapP.bkt[indxTmp]; ok {
+				for j := 0; j < nodeP.sz; j++ {
+					(*ret)[i] = *(nodeP.cvec[j])
 					i++
 				}
 			}
-			indx_tmp++
+			indxTmp++
 		}
 
 	}

@@ -8,20 +8,20 @@ import (
 // PingReqHandler updates the packet to indicate it is a ping response
 // and calls the Connector.PingRes for writing to network. It also updates
 // the NbrMap cache for the received Nbr.
-func (node_p *Node) PingReqHandler(env pkt.Envelope) {
+func (nodeP *Node) PingReqHandler(env pkt.Envelope) {
 	// Send response
 	env.Pkt.Type = pkt.PingRes
-	node_p.conn.PingRes(&env)
+	nodeP.conn.PingRes(&env)
 
 	// Potentially update in NbrMap
-	node_p.nmap.Insert(&node_p.hash, &env.Pkt.Hash, &env.Addr.IP, node_p.conn)
+	nodeP.nmap.Insert(&nodeP.hash, &env.Pkt.Hash, &env.Addr.IP, nodeP.conn)
 }
 
 // FindReqHandler is responsible for finding KVAL Nbrs from NbrMap and calling
 // Connector.FindNodeRes for writing the response on the network.
-func (node_p *Node) FindReqHandler(env pkt.Envelope) {
+func (nodeP *Node) FindReqHandler(env pkt.Envelope) {
 	var ret []pkt.ObjAddr
-	node_p.nmap.NodeLookup(&node_p.hash, &env.Pkt.THash, &ret, utils.KVAL)
+	nodeP.nmap.NodeLookup(&nodeP.hash, &env.Pkt.THash, &ret, utils.KVAL)
 
-	node_p.conn.FindNodeRes(&node_p.hash, &env, &ret)
+	nodeP.conn.FindNodeRes(&nodeP.hash, &env, &ret)
 }
