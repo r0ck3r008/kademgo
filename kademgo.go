@@ -20,6 +20,7 @@ import (
 // to interact with the library.
 type KademGo struct {
 	node *node.Node
+	gs   *grpc.Server
 }
 
 // Init initiates the internal structre, node of KademGo.
@@ -33,8 +34,8 @@ func (kdm_p *KademGo) Init(addr_p *string, addr_hash *[utils.HASHSZ]byte) {
 		os.Exit(1)
 	}
 
-	gs := grpc.NewServer()
-	protos.RegisterKademgoServer(gs, kdm_p)
+	kdm_p.gs = grpc.NewServer()
+	protos.RegisterKademgoServer(kdm_p.gs, kdm_p)
 	// create a TCP socket for inbound server connections
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", utils.GRPCPORTNUM))
 	if err != nil {
@@ -43,7 +44,7 @@ func (kdm_p *KademGo) Init(addr_p *string, addr_hash *[utils.HASHSZ]byte) {
 	}
 
 	// listen for requests
-	gs.Serve(l)
+	kdm_p.gs.Serve(l)
 }
 
 // GetHash RPC call is to get the hash from the node
@@ -58,5 +59,6 @@ func (kdm_p *KademGo) GetHash(ctx context.Context, req *protos.Request) (*protos
 
 // DeInit calls DeInit on the internal node.
 func (kdm_p *KademGo) DeInit() {
+	kdm_p.gs.GracefulStop()
 	kdm_p.node.DeInit()
 }
