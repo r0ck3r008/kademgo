@@ -12,3 +12,5 @@ RUN git clone https://github.com/r0ck3r008/kademgo
 RUN make -C kademgo
 
 WORKDIR kademgo
+
+ENTRYPOINT ["go", "run", "example/main.go"]
